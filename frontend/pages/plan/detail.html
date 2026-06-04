@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SubManager - 구독 관리</title>
+    <!-- 나중에 프론트 1의 CSS가 오면 대체될 예정 -->
+    <link rel="stylesheet" href="./src/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 사이드바 (프론트 1/2 담당 구역 포함) -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div id="MainLogo">SubManager</div>
+                <div id="SmallLogo">premium Plan</div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">Dashboard</a></li>
+                    <li><a href="plan-list.html">All Plans</a></li>
+                    <li><a href="my-subscriptions.html">My Subscriptions</a></li>
+                    <li><a href="recommendation.html">Recommendations</a></li>
+                    <li><a href="cancellation-log.html">Diary</a></li>
+                </ul>
+            </nav>
+            <button class="btn-add">+ Add Subscription</button>
+        </aside>
+
+        <!-- 메인 콘텐츠 영역 (프론트 3 집중 구역) -->
+        <main class="content">
+            <header class="content-header">
+                <h1>Manage Subscriptions</h1>
+                <p>Track, optimize, and control your recurring expenses in one place.</p>
+            </header>
+
+            <!-- 상단 요약 카드 -->
+            <section class="summary-cards">
+                <div class="card">
+                    <h3>Monthly Spend</h3>
+                    <div class="value">$428.50</div>
+                    <span class="trend down">↘ 12% from last month</span>
+                </div>
+                <div class="card">
+                    <h3>Active Services</h3>
+                    <div class="value">14</div>
+                    <span class="info">2 expiring this week</span>
+                </div>
+                <div class="card highlight">
+                    <h3>Total Savings Identified</h3>
+                    <div class="value">$84.20</div>
+                    <span class="action">Auto-optimization ready</span>
+                </div>
+            </section>
+
+            <!-- 구독 리스트 테이블 (프론트 3 핵심 업무) -->
+            <section class="subscription-list">
+                <div class="list-header">
+                    <h2>All Subscriptions</h2>
+                    <div class="list-controls">
+                        <button class="btn-filter">Filter</button>
+                        <button class="btn-sort">Sort</button>
+                    </div>
+                </div>
+
+                <table class="sub-table">
+                    <thead>
+                        <tr>
+                            <th>SERVICE NAME</th>
+                            <th>STATUS</th>
+                            <th>START DATE</th>
+                            <th>USAGE (Heatmap)</th> <!-- 핵심 차별점: 히트맵 -->
+                            <th>PRICE</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 넷플릭스 예시 -->
+                        <tr>
+                            <td>
+                                <div class="service-info">
+                                    <span class="icon red">N</span>
+                                    <div>
+                                        <strong>Netflix</strong><br>
+                                        <small>Premium 4K</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge active">Active</span></td>
+                            <td>Jan 12, 2023</td>
+                            <td>
+                                <!-- 히트맵 그리드 (30칸) 들어갈 자리 -->
+                                <div class="heatmap-grid" id="heatmap-netflix">
+                                    <!-- JS에서 th:each처럼 30개 생성 예정 -->
+                                </div>
+                            </td>
+                            <td>$19.99</td>
+                            <td>
+                                <button class="btn-checkin">Check-in</button>
+                                <button class="btn-cancel">Quick Cancel</button>
+                            </td>
+                        </tr>
+                        
+                        <!-- 스포티파이 예시 (경보 상태) -->
+                        <tr>
+                            <td>
+                                <div class="service-info">
+                                    <span class="icon green">S</span>
+                                    <div>
+                                        <strong>Spotify</strong><br>
+                                        <small>Family Plan</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge warning">Expiring Soon</span></td>
+                            <td>Mar 05, 2022</td>
+                            <td>
+                                <div class="heatmap-grid" id="heatmap-spotify"></div>
+                            </td>
+                            <td>$15.99</td>
+                            <td>
+                                <button class="btn-checkin">Check-in</button>
+                                <button class="btn-cancel">Quick Cancel</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>

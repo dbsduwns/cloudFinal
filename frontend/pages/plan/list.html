@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>플랜 목록 - SubManager</title>
+    <link rel="stylesheet" href="../../src/css/style.css">
+</head>
+<body>
+    <!-- 
+        [NOTICE] 
+        이 파일은 개발 및 프로토타이핑용입니다. 
+        실제 서비스 시에는 <section class="content-area"> 내부의 내용만 
+        Thymeleaf layout.html의 콘텐츠 영역으로 옮겨지게 됩니다.
+    -->
+
+    <div class="layout-wrapper">
+        <!-- 사이드바 (프론트 1/2 담당 구역 - 프로토타입용 Mockup) -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>SubManager</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="../../index.html">Dashboard</a></li>
+                    <li><a href="list.html" class="active">All Plans</a></li>
+                    <li><a href="../member/subscriptions.html">My Subscriptions</a></li>
+                    <li><a href="../recommendation.html">Recommendations</a></li>
+                    <li><a href="../cancellation-log.html">Diary</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- 메인 콘텐츠 구역 (프론트 3 집중 담당 영역) -->
+        <main class="main-content">
+            <header class="page-header">
+                <div>
+                    <h2>Available Plans</h2>
+                    <p>탐색하고 원하는 서비스를 구독하여 관리하세요.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary">필터</button>
+                    <button class="btn btn-primary">+ 새로운 플랜 제안</button>
+                </div>
+            </header>
+
+            <section class="content-area">
+                <!-- 상단 통계 요약 (Dashboard 컨셉) -->
+                <div class="summary-grid">
+                    <div class="card">
+                        <span class="card-label">전체 플랜</span>
+                        <div class="card-value">24</div>
+                    </div>
+                    <div class="card">
+                        <span class="card-label">평균 가격</span>
+                        <div class="card-value">₩12,500</div>
+                    </div>
+                    <div class="card highlight">
+                        <span class="card-label">인기 카테고리</span>
+                        <div class="card-value">OTT</div>
+                    </div>
+                </div>
+
+                <!-- 플랜 리스트 테이블 -->
+                <div class="card list-card">
+                    <table class="sub-table">
+                        <thead>
+                            <tr>
+                                <th>서비스명</th>
+                                <th>카테고리</th>
+                                <th>월 결제액</th>
+                                <th>사용량 트렌드 (30일 히트맵)</th>
+                                <th>상태</th>
+                                <th>작업</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 예시 데이터 1: 넷플릭스 -->
+                            <tr>
+                                <td>
+                                    <div class="service-item">
+                                        <div class="service-icon netflix">N</div>
+                                        <div class="service-name">
+                                            <strong>Netflix</strong>
+                                            <span>Standard Plan</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-outline">OTT</span></td>
+                                <td>₩13,500</td>
+                                <td>
+                                    <!-- 히트맵 그리드 (핵심 차별점) -->
+                                    <div class="heatmap-container">
+                                        <div class="heatmap-grid" id="heatmap-1">
+                                            <!-- JS 또는 Thymeleaf th:each로 30개 그리드가 들어갈 자리 -->
+                                        </div>
+                                        <span class="heatmap-label">최근 30일 기록</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-success">ACTIVE</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-checkin">체크인</button>
+                                    <button class="btn btn-sm btn-outline">상세</button>
+                                </td>
+                            </tr>
+
+                            <!-- 예시 데이터 2: 유튜브 프리미엄 -->
+                            <tr>
+                                <td>
+                                    <div class="service-item">
+                                        <div class="service-icon youtube">Y</div>
+                                        <div class="service-name">
+                                            <strong>YouTube Premium</strong>
+                                            <span>개인 멤버십</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-outline">Video</span></td>
+                                <td>₩14,900</td>
+                                <td>
+                                    <div class="heatmap-container">
+                                        <div class="heatmap-grid" id="heatmap-2"></div>
+                                        <span class="heatmap-label">미사용 5일째</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-warning">WARNING</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-checkin">체크인</button>
+                                    <button class="btn btn-sm btn-outline">상세</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 임시 스크립트: 히트맵 그리드 생성 및 더미 데이터 시각화 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const createHeatmap = (selector, density = 0.5) => {
+                const grid = document.querySelector(selector);
+                if (!grid) return;
+                
+                for (let i = 0; i < 30; i++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('heat-cell');
+                    
+                    // 랜덤하게 사용량 시각화 (실제로는 백엔드 데이터 th:classappend 사용 예정)
+                    const rand = Math.random();
+                    if (rand < density * 0.3) cell.classList.add('heat-high');
+                    else if (rand < density * 0.7) cell.classList.add('heat-mid');
+                    else if (rand < density) cell.classList.add('heat-low');
+                    else cell.classList.add('heat-none');
+                    
+                    grid.appendChild(cell);
+                }
+            };
+
+            createHeatmap('#heatmap-1', 0.8); // 사용량 높음
+            createHeatmap('#heatmap-2', 0.2); // 사용량 낮음 (경보)
+        });
+    </script>
+</body>
+</html>

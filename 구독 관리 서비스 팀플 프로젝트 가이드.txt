@@ -1,0 +1,303 @@
+구독 관리 서비스 팀플 프로젝트 가이드
+
+> 방식: Thymeleaf + Spring Boot 통합형 (1번 방식) + 사용량 기반 구독 정리  
+> 인원: 6명 (백엔드 3명 / 프론트엔드 3명)  
+> 핵심 차별점: "얼마나 썼는지"를 직접 체크인하고, 히트맵 + 방치 경보 + 대체 추천으로 정리를 돕는다.
+
+---
+
+## 1. 기술 스택 요약
+
+| 영역 | 기술 |
+|------|------|
+| 백엔드 | Java 17, Spring Boot 3.x, Spring Data JPA, Spring Security, Spring Mail |
+| 빌드 도구 | Gradle (Wrapper 사용 필수) |
+| DB | MySQL 8.0 |
+| 프론트 | Thymeleaf 3.x, HTML5, CSS3, Vanilla JS |
+| 에셋 빌드 | Node.js + Vite (src/main/frontend/) |
+| 배포 | GitHub Actions CI/CD → EC2 / Codespaces |
+| 실행 | java -jar (단일 JAR 배포) |
+
+---
+
+## 2. 프로젝트 폴더 구조
+subscription-service/
+├── .github/workflows/deploy.yml # CI/CD (팀장)
+├── scripts/deploy.sh # 배포 쉘 스크립트 (팀장)
+├── src/main/
+│ ├── java/com/example/sub/
+│ │ ├── SubscriptionApplication.java
+│ │ ├── config/ # Security, JPA, Web, Scheduler
+│ │ ├── controller/ # 화면별 분리
+│ │ ├── service/
+│ │ ├── domain/entity/
+│ │ ├── repository/
+│ │ ├── dto/
+│ │ └── util/ # MailUtil 등
+│ ├── resources/
+│ │ ├── application.yml
+│ │ ├── application-prod.yml
+│ │ ├── static/ # npm run build 산출물 (CSS, JS)
+│ │ │ ├── css/main.css
+│ │ │ └── js/main.js
+│ │ └── templates/
+│ │ ├── layout.html # 공통 레이아웃
+│ │ ├── fragments/
+│ │ │ ├── header.html
+│ │ │ ├── footer.html
+│ │ │ └── nav.html
+│ │ ├── member/ # 회원 화면
+│ │ ├── subscribe/ # 구독 신청/결과
+│ │ ├── plan/ # 플랜 목록/상세
+│ │ └── admin/ # 통계/관리 (선택)
+│ └── frontend/ # 원본 에셋 (프론트1 전담)
+│ ├── package.json
+│ ├── package-lock.json
+│ ├── vite.config.js
+│ └── src/
+│ ├── css/main.css
+│ └── js/main.js
+└── build.gradle
+
+
+
+---
+
+## 3. 팀원별 역할 상세
+
+### 🎯 팀장(본인) — 통합 & 배포 & 공통 백엔드 & 인사이트
+
+| 담당 | 구체 산출물 |
+|------|------------|
+| 프로젝트 뼈대 | `build.gradle`, `settings.gradle`, `.gitignore` |
+| DB 규약 | ERD 확정, 테이블/컬럼명 표준, 연관관계 설계 |
+| 설정 | `application.yml`, `application-prod.yml` (환경변수 분리) |
+| 보안 | `SecurityConfig.java`, 비밀번호 암호화 Bean, login URL 규칙 |
+| 배포 | `.github/workflows/deploy.yml`, `scripts/deploy.sh`, EC2 세팅 |
+| 공통 유틸 | `MailUtil.java`, `SchedulerConfig.java` |
+| 인사이트 | `UsageAnalyticsService.java`, `RecommendationService.java`, "대체 추천" 로직 |
+| 해지 다이어리 | `CancellationLogController.java`, `CancellationLog.java` |
+| 통합 리뷰 | 모든 Pull Request 리뷰 및 feature → develop → main 머지, 충돌 해결 |
+| 화면 | `templates/admin/dashboard.html` (관리자 통계, 선택) |
+
+### 👤 백엔드 1 — 회원·인증·알림
+
+| 담당 | 구체 산출물 |
+|------|------------|
+| Entity | `Member.java`, `Role.java` (Enum: ADMIN, USER) |
+| Repository | `MemberRepository.java` |
+| Service | `MemberService.java`, `CustomUserDetailsService.java` |
+| Controller | `MemberController.java`, `LoginController.java` |
+| 주요 URL | `GET/POST /join`, `/login`, `/member/mypage`, `/member/update` |
+| 알림 | `ReminderService.java` (@Scheduled: 매일 오전 9시 이메일 발송) |
+| 해지 태그 | `CancellationTag.java`, `CancellationLog.java` |
+| Model 규약 | Controller에서 반드시 `member` key로 Member 객체를 담아 반환 |
+
+### 📊 백엔드 2 — 구독·체크인·집계·경보 (핵심 도메인)
+
+| 담당 | 구체 산출물 |
+|------|------------|
+| Entity | `SubscriptionPlan.java`, `MemberSubscription.java`, `SubscriptionUsage.java` |
+| Repository | `MemberSubscriptionRepository.java`, `SubscriptionUsageRepository.java` |
+| Service | `SubscriptionService.java`, `CheckInService.java` |
+| 집계 | `UsageStatisticsService.java` (주간/월간 COUNT, SUM) |
+| 경보 | `AlertLevelResolver.java` → NORMAL / WARNING / DANGER / CRITICAL |
+| Controller | `PlanController.java`, `SubscriptionController.java` |
+| 주요 URL | `GET /`, `GET /plans/{id}`, `POST /subscribe`, `POST /checkin/{id}` |
+| Model 규약 | `plans`, `plan`, `subscriptions`, `subscription`, `usageStats` |
+
+### 🎨 프론트엔드 1 — UI 총괄·Asset·레이아웃
+
+| 담당 | 구체 산출물 |
+|------|------------|
+| npm 프로젝트 관리 | `frontend/package.json`, `vite.config.js` |
+| 빌드 책임 | `npm ci && npm run build` → `static/` 산출물 갱신 |
+| 레이아웃 | `layout.html`, `fragments/header.html`, `footer.html`, `nav.html` |
+| CSS 시스템 | 공통 클래스: `.btn`, `.card`, `.form-group`, `.container`, `.badge-*` |
+| 히트맵 CSS | `.heatmap-grid` (30칸), `.heat-green`, `.heat-gray` 등 |
+| 공통 JS | `main.js` (탭 타이틀 배지 갱신, 토스트 알림 기본 함수) |
+| 규칙 | `layout.html` 외 `<html>`, `<head>`, `<body>` 직접 수정 금지 (팀 전체 공지) |
+
+### 👤 프론트엔드 2 — 회원 화면
+
+| 담당 페이지 | 파일 경로 | 특징 |
+|-----------|----------|------|
+| 로그인 | `templates/login.html` | `th:if="${param.error}"`, Security form-login |
+| 회원가입 | `templates/member/join.html` | `th:object="${memberForm}"`, `th:field` 바인딩 |
+| 마이페이지 | `templates/member/mypage.html` | `th:text="${member.name}"`, 내 구독 요약 |
+| 사용 패턴 요약 | `templates/member/usage-summary.html` | 이번 달 총 체크인 횟수, 방치 구독 수 |
+
+> 모든 페이지는 `layout.html` 상속 필수
+
+### 📱 프론트엔드 3 — 구독 화면 (핵심 차별 UI)
+
+| 담당 페이지 | 파일 경로 | 핵심 요소 |
+|-----------|----------|----------|
+| 메인/플랜 목록 | `templates/plan/list.html` | `th:each`, 체크인 토글, 히트맵 30칸 그리드, 경보 배지 |
+| 플랜 상세 | `templates/plan/detail.html` | 플랜 정보, 확대 히트맵 |
+| 구독 신청 폼 | `templates/subscribe/form.html` | 시작일, 약관 동의 |
+| 신청 결과 | `templates/subscribe/result.html` | 성공/실패 메시지 |
+| 내 구독 관리 | `templates/member/subscriptions.html` | 카드 리스트, 해지 버튼, 알림 설정 |
+| 대체 추천 | `templates/recommendation.html` | "이 구독 대신 이걸 써보세요" 카드 |
+| 해지 다이어리 | `templates/cancellation-log.html` | 과거 해지 목록, 태그 표시 |
+
+> 히트맵 30칸: `<div class="heatmap-grid">` 안에 `th:each`로 `<div class="heat-*">` 30개 렌더링
+
+---
+
+## 4. Controller-View 데이터 흐름 표 (Model 규약)
+
+| 화면 | Controller URL | Model key | Thymeleaf 사용 예시 |
+|------|---------------|-----------|---------------------|
+| 플랜 목록 | `GET /` | `plans` | `th:each="p : ${plans}"` |
+| 플랜 상세 | `GET /plans/{id}` | `plan` | `th:text="${plan.name}"` |
+| 회원가입 | `GET /join` | `memberForm` | `th:object="${memberForm}"` |
+| 로그인 에러 | `/login?error` | param.error | `th:if="${param.error}"` |
+| 마이페이지 | `GET /member/mypage` | `member` | `th:text="${member.email}"` |
+| 내 구독 | `GET /subscriptions` | `subscriptions` | `th:each="s : ${subscriptions}"` |
+| 체크인 결과 | `POST /checkin/{id}` | flashAttribute | `th:if="${successMessage}"` |
+
+> **백엔드 1, 2는 이 표준 key 외에는 Model에 담지 않습니다.**
+
+---
+
+## 5. 공통 협업 규칙 (6명 모두 준수)
+
+### 레이아웃 상속 규칙
+모든 HTML은 아래 템플릿으로 시작합니다. `<head>`, `<body>` 등은 직접 쓰지 않습니다.
+
+```html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head><title>페이지 제목</title></head>
+<body>
+  <section>
+    <!-- 여기에 내용만 작성 -->
+  </section>
+</body>
+</html>
+빌드 산출물 규칙
+static/ 폴더는 Git에 포함하지 않거나, CI에서 자동 생성되도록 합니다.
+프론트 1은 feature/common-ui 브랜치 PR 전 항상 npm run build를 실행합니다.
+Git 충돌 방지
+build.gradle 수정 금지 → 추가 의존성 필요 시 팀장에게 요청
+application.yml 수정 금지 → 팀장 전담
+src/main/frontend/ 수정 금지 → 프론트 1 외 접근 불가 (CSS/JS 요청은 프론트 1에게)
+6. Git 브랜치 전략
+브랜치	담당	목적
+main	팀장	서버 배포용, 직접 push 금지, PR만 머지
+develop	팀장	통합 테스트용
+feature/common-ui	프론트 1	레이아웃, CSS, JS, npm 빌드
+feature/member-auth	백엔드 1 + 프론트 2	회원가입, 로그인, 마이페이지
+feature/subscription-core	백엔드 2 + 프론트 3	체크인, 히트맵, 경보, 추천
+feature/insight-diary	팀장	대체 추천, 해지 다이어리, 관리자
+feature/deploy-pipeline	팀장	CI/CD, 배포 스크립트
+
+feature/ui-system → develop 먼저 합친 뒤, 나머지 feature는 develop 기반으로 따서 작업합니다.
+
+7. Sprint 일정 (3주 기준)
+Week 1: 공통 세팅 + 뼈대
+날짜	전체 목표	세부 Task
+Day 1~2	팀장 세팅	프로젝트 뼈대 생성, build.gradle 고정, ERD 확정, Git 브랜치 보호 규칙 설정
+Day 2~3	프론트 1	layout.html, fragments, 기본 CSS/JS, vite.config.js 완료
+Day 3~4	백엔드 1	Member, Role Entity, 회원가입/로그인 기본 Controller
+Day 4~5	백엔드 2	SubscriptionPlan, MemberSubscription Entity, 기본 CRUD API
+주말	팀장	develop 브랜치 통합, build 테스트, 배포 파이프라인 초기 세팅
+
+Week 2: 기능 개발 + 통합
+날짜	전체 목표	세부 Task
+Day 1~2	프론트 2	회원가입, 로그인, 마이페이지 화면 완료
+Day 1~3	프론트 3	플랜 목록, 체크인 토글, 히트맵 그리드 렌더링
+Day 2~3	백엔드 1	이메일 알림 ReminderService, @Scheduled 설정
+Day 3~4	백엔드 2	체크인 저장 API, 집계 쿼리, 경보 등급 로직
+Day 5	팀장	feature/* → develop 머지, 충돌 해결, CI/CD 연동 테스트
+주말	전원	통합 테스트, 버그 수정
+
+Week 3: 차별 기능 + 배포 시연
+날짜	전체 목표	세부 Task
+Day 1~2	팀장	대체 추천 로직, 해지 다이어리 API 완료
+Day 2~3	프론트 3	추천 화면, 방치 배지, 해지 다이어리 화면
+Day 3~4	백엔드 2	경보 로직 완성, AlertLevelResolver 연동
+Day 4~5	전원	develop → main PR, CI/CD 자동 배포 확인, 서버 접속 테스트
+발표 전	팀장	시나리오 정리: (1) 구독 등록 → (2) 체크인 → (3) 히트맵 확인 → (4) 방치 경보 → (5) 대체 추천 → (6) 해지 다이어리
+
+8. ERD 핵심 테이블
+member
+sql
+
+id          BIGINT PK
+email       VARCHAR(100) UNIQUE
+password    VARCHAR(255)
+name        VARCHAR(50)
+role        VARCHAR(20)  -- ADMIN / USER
+created_at  DATETIME
+subscription_plan (플랜 템플릿)
+sql
+
+id          BIGINT PK
+name        VARCHAR(100)      -- e.g., "넷플릭스 스탠다드"
+category    VARCHAR(50)       -- OTT, MUSIC, CLOUD 등
+monthly_price INT
+yearly_price  INT
+provider_url  VARCHAR(500)    -- 해지/관리 페이지 URL
+member_subscription (사용자의 실제 구독)
+sql
+
+id          BIGINT PK
+member_id   BIGINT FK
+plan_id     BIGINT FK
+start_date  DATE
+due_date    DATE              -- 다음 결제일
+status      VARCHAR(20)       -- ACTIVE, CANCELLED, PAUSED
+last_used_at DATE
+alert_level VARCHAR(20)       -- NORMAL, WARNING, DANGER, CRITICAL
+created_at  DATETIME
+subscription_usage (체크인 기록)
+sql
+
+id                  BIGINT PK
+member_subscription_id BIGINT FK
+used_date           DATE
+used                BOOLEAN
+duration_minutes    INT         -- 선택적
+created_at          DATETIME
+cancellation_log (해지 다이어리)
+sql
+
+id          BIGINT PK
+member_id   BIGINT FK
+plan_id     BIGINT FK
+cancelled_at DATE
+tags        VARCHAR(255)    -- "너무 비쌈,콘텐츠 별로,대체 서비스 있음"
+memo        TEXT
+9. PR 체크리스트 템플릿 (본인 체크 후 PR 생성)
+markdown
+
+## PR 체크리스트
+
+- [ ] `develop` 브랜치 기준으로 feature 브랜치를 생성했음
+- [ ] 로컬에서 `./gradlew build` 성공 확인
+- [ ] 프론트 수정 시 `npm run build`로 `static/` 갱신 확인 (프론트 1)
+- [ ] Controller에서 표준 Model key만 사용함 (백엔드)
+- [ ] Thymeleaf 페이지가 `layout.html`을 상속함 (프론트 2, 3)
+- [ ] `application.yml`을 수정하지 않음 (팀장 외)
+- [ ] `build.gradle`을 수정하지 않음 (팀장 외)
+- [ ] `.gitignore`에 로그/빌드 산출물 추가 확인
+
+### 리뷰어 지정
+- [ ] 팀장을 Assignee로 지정
+10. 시연 시나리오 (발표용)
+순서	행동	대사/설명
+1	구독 등록	"OTT, 음악, 클라우드 등 구독 서비스를 등록합니다"
+2	오늘의 체크인	"기존 앱은 못 하는 기능: 오늘 썼는지 직접 기록합니다"
+3	히트맵 확인	"30일간 언제 썼는지 잔디처럼 한눈에 확인합니다"
+4	방치 경보	"2주 안 쓰면 노란색, 한 달이면 빨간색 경보가 뜹니다"
+5	대체 추천	"안 쓰는 넷플릭스 대신 티빙을 강추, 연 6만 원 절감 가능"
+6	해지 다이어리	"해지 이유를 기록해두면 중독 방지, 재가입 시 과거 기록까지 보여줍니다"
+7	이메일 알림	"매일 아침 9시, 오늘 해야 할 체크인과 다가오는 결제일을 메일로 알려줍니다"
+
+마지막 수정일: 2026-06-03
+문의사항은 팀장에게 DM
+
+

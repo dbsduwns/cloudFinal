@@ -1,0 +1,40 @@
+# Windows
+Thumbs.db
+Desktop.ini
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.class
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Node / Frontend
+node_modules/
+src/main/resources/static/css/
+src/main/resources/static/js/
+src/main/frontend/dist/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+
+# Environment
+.env
+application-local.yml
+
+# Build artifacts
+*.jar
+*.war
+
+# Temp
+*.tmp
+*.swp

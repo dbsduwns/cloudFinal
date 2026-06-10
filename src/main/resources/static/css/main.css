@@ -1,0 +1,200 @@
+/* 
+   가이드 준수: 공통 CSS 시스템 
+   preview-1-main.html의 고퀄리티 스타일 이식
+*/
+
+:root {
+    /* Brand Colors */
+    --primary: #0061FF;
+    --primary-dark: #0047C7;
+    --primary-soft: #EBF2FF;
+    --bg-main: #F4F7FA;
+    --sidebar-w: 260px;
+    --header-h: 75px;
+    --text-main: #1A1D23;
+    --text-muted: #8492A6;
+    --border-color: #E0E6ED;
+    --white: #FFFFFF;
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    
+    /* Status Colors */
+    --success: #27AE60;
+    --warning: #FF9500;
+    --danger: #FF3B30;
+    --critical: #1A1D23;
+
+    /* Heatmap Colors */
+    --h-none: #E9E9EB;
+    --h-level-1: #C6E48B;
+    --h-level-2: #7BC96F;
+    --h-level-3: #239A3B;
+    --h-level-4: #196127;
+
+    /* Radius */
+    --radius-large: 24px;
+    --radius-mid: 16px;
+    --radius-small: 10px;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.025em;
+}
+
+body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    overflow: hidden;
+}
+
+/* Layout Structures */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.content {
+    padding: 40px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Common Components */
+.card {
+    background: var(--white);
+    border-radius: var(--radius-large);
+    padding: 30px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 25px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border-radius: var(--radius-small);
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: var(--radius-small);
+    border: 1px solid var(--border-color);
+    outline: none;
+    transition: 0.2s;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* Badge System */
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.badge-normal { background: #F1F5F9; color: var(--text-muted); }
+.badge-warning { background: #FFF7ED; color: var(--warning); }
+.badge-danger { background: #FEF2F2; color: var(--danger); }
+.badge-critical { background: var(--critical); color: white; }
+
+/* Heatmap Grid */
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.heat-cell {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: var(--h-none);
+    transition: transform 0.2s;
+}
+
+.heat-cell:hover {
+    transform: scale(1.1);
+}
+
+.heat-gray { background: var(--h-none); }
+.heat-green-1 { background: var(--h-level-1); }
+.heat-green-2 { background: var(--h-level-2); }
+.heat-green-3 { background: var(--h-level-3); }
+.heat-green-4 { background: var(--h-level-4); }
+
+/* Modal System */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 4000;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.modal-overlay.active { display: flex; opacity: 1; }
+
+.modal-container {
+    background: white;
+    width: 450px;
+    max-width: 90%;
+    border-radius: var(--radius-large);
+    padding: 40px;
+    transform: translateY(20px);
+    transition: 0.3s;
+}
+
+.modal-overlay.active .modal-container { transform: translateY(0); }
+

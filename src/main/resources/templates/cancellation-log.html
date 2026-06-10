@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!-- 
+    [프론트엔드 3] 해지 다이어리 페이지
+    - 가이드라인: layout.html 상속 필수
+    - 핵심 요소: 과거 해지 목록, 태그 표시, 해지 메모
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>해지 다이어리 - SubTrack</title>
+    <style>
+        /* 레이아웃 구조 보정 Grid */
+        .app-container {
+            display: grid;
+            grid-template-areas: 
+                "sidebar header"
+                "sidebar main"
+                "sidebar footer";
+            grid-template-columns: var(--sidebar-w) 1fr;
+            grid-template-rows: var(--header-h) 1fr auto;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        .site-header {
+            grid-area: header;
+            height: var(--header-h);
+        }
+        .site-nav {
+            grid-area: sidebar;
+            width: var(--sidebar-w);
+        }
+        .main-content {
+            grid-area: main;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .site-footer {
+            grid-area: footer;
+        }
+        
+        /* 해지 다이어리 전용 프리미엄 스타일 보강 */
+        .diary-card {
+            border-left: 5px solid var(--danger) !important;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .diary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+        .log-meta {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 10px 0;
+        }
+        .memo-box {
+            background-color: var(--bg-main);
+            border-radius: var(--radius-small);
+            padding: 15px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+            border: 1px dashed var(--border-color);
+            margin-top: 15px;
+        }
+        .diary-stats-bar {
+            background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+            color: white;
+            border-radius: var(--radius-large);
+            padding: 25px;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 15px rgba(221, 36, 118, 0.2);
+        }
+        .diary-stats-bar h2 {
+            margin: 0 0 5px 0;
+            font-size: 22px;
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+<section class="content">
+    <div class="container">
+        <!-- 페이지 타이틀 & 인포 그래픽 스타일 대시보드 배너 -->
+        <div class="diary-stats-bar d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2>📔 해지 다이어리</h2>
+                <p class="mb-0 opacity-80">과거의 구독 해지 사유를 분석하고 스마트한 소비 습관을 설계하세요.</p>
+            </div>
+            <div class="text-right">
+                <span class="h4 font-weight-bold" th:text="${#lists.size(cancellationLogs)} + '건의 해지 기록'">0건의 해지 기록</span>
+            </div>
+        </div>
+
+        <!-- 
+            [백엔드 협의 필요]
+            - Model Key: "cancellationLogs" (List 자료형)
+        -->
+        <div class="cancellation-list">
+            <!-- 해지 기록이 없을 때 -->
+            <div th:if="${#lists.isEmpty(cancellationLogs)}" class="empty-state card p-5 text-center shadow-sm">
+                <div class="mb-4">
+                    <span class="display-3 text-muted">&nbsp;📂&nbsp;</span>
+                </div>
+                <h3 class="h4 mb-2">아직 기록된 해지 내역이 없습니다.</h3>
+                <p class="text-muted mb-4">구독 관리를 해지할 때 남긴 발자취가 이곳에 기록됩니다.</p>
+                <a href="/subscriptions" class="btn btn-primary">내 구독 목록 보러가기</a>
+            </div>
+
+            <!-- 해지 기록이 존재할 때 반복문 돌며 카드 표시 -->
+            <!-- log: CancellationLog (또는 관련 Dto Map) -->
+            <div th:each="log : ${cancellationLogs}" class="diary-card card mb-4">
+                <div class="card-body p-4">
+                    <div class="row align-items-start">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <!-- [백엔드 필드] log.plan.name : 해지한 서비스 명칭 -->
+                                <h3 class="h4 mb-0 font-weight-bold text-dark" th:text="${log.plan.name}">넷플릭스</h3>
+                                <span class="badge badge-danger">해지 완료</span>
+                            </div>
+                            
+                            <!-- [백엔드 필드] log.cancelledAt : 해지 날짜 -->
+                            <div class="log-meta mb-3">
+                                <span>해지 날짜: </span>
+                                <strong class="text-secondary" th:text="${#temporals.format(log.cancelledAt, 'yyyy년 MM월 dd일')}">2026년 06월 01일</strong>
+                            </div>
+
+                            <!-- [백엔드 필드] log.tags : 쉼표로 구분된 해지 태그 문자열 -->
+                            <!-- arraySplit으로 쪼개서 각각의 태그 배지 생성 -->
+                            <div class="tag-container" th:if="${log.tags != null}">
+                                <span th:each="tag : ${#strings.arraySplit(log.tags, ',')}" 
+                                      class="badge badge-normal" 
+                                      th:text="'#' + ${tag}">#비쌈</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 해지 관련 피드백 요약 또는 뱃지 -->
+                        <div class="col-md-4 text-md-right text-left mt-3 mt-md-0">
+                            <span class="small text-muted">구독 정리 완료 ✅</span>
+                        </div>
+                    </div>
+
+                    <!-- [백엔드 필드] log.memo : 해지하면서 남긴 반성 메모 -->
+                    <div class="memo-box" th:if="${log.memo != null && !#strings.isEmpty(log.memo)}">
+                        <strong class="d-block mb-1 text-secondary" style="font-size: 13px;">📝 해지 메모 & 반성</strong>
+                        <p class="mb-0" th:text="${log.memo}">사용 빈도가 현저히 낮아져 해지합니다. 한 달에 한 번도 안 썼음.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 하단 바로가기 메뉴 -->
+        <div class="text-center mt-5">
+            <a href="/" class="btn btn-outline-secondary">
+                &larr; 홈으로 돌아가기
+            </a>
+            <a href="/recommendations" class="btn btn-primary ml-2">
+                💡 대체 추천 확인하기
+            </a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

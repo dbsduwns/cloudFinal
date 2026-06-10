@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<!-- 
+    [프론트엔드 3] 대체 추천 페이지
+    - 가이드라인: layout.html 상속 필수
+    - 핵심 요소: "이 구독 대신 이걸 써보세요" 비교 카드, 절약 가능 금액 표시
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>스마트 대체 추천 - SubTrack</title>
+</head>
+<body>
+<section class="content">
+    <style>
+        /* 레이아웃 구조 보정 Grid */
+        .app-container {
+            display: grid;
+            grid-template-areas: 
+                "sidebar header"
+                "sidebar main"
+                "sidebar footer";
+            grid-template-columns: var(--sidebar-w) 1fr;
+            grid-template-rows: var(--header-h) 1fr auto;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        .site-header {
+            grid-area: header;
+            height: var(--header-h);
+        }
+        .site-nav {
+            grid-area: sidebar;
+            width: var(--sidebar-w);
+        }
+        .main-content {
+            grid-area: main;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .site-footer {
+            grid-area: footer;
+        }
+        
+        /* 기존 스타일 */
+        .btn-outline-danger {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+        .btn-outline-danger:hover {
+            background: #FEF2F2;
+        }
+        .badge-success {
+            background: #E8F5E9;
+            color: var(--success);
+        }
+        .alert-success {
+            background-color: #E8F5E9;
+            color: var(--success);
+            border: 1px solid #C8E6C9;
+            padding: 15px;
+            border-radius: var(--radius-small);
+        }
+    </style>
+    <div class="container">
+        <header class="page-header mb-5 text-center"> <!-- [역할] 페이지 메인 타이틀 및 설명 -->
+            <h1 class="display-4">스마트 대체 추천</h1>
+            <p class="lead text-muted">사용 패턴을 분석하여 더 효율적인 구독 플랜을 찾아드립니다.</p>
+        </header>
+
+        <!-- 추천 목록이 비어있을 때 -->
+        <div th:if="${#lists.isEmpty(recommendations)}" class="empty-state card p-5 text-center shadow-sm"> <!-- [역할] 추천 데이터가 없을 때 표시되는 안내창 -->
+            <p class="h4">현재 모든 구독을 잘 활용하고 계시네요!</p>
+            <p class="text-muted">사용량이 급격히 떨어지는 서비스가 생기면 즉시 알려드릴게요.</p>
+            <a href="/subscriptions" class="btn btn-primary mt-3">내 구독 확인하기</a>
+        </div>
+
+        <!-- 추천 카드 리스트 -->
+        <!-- [백엔드 데이터] recommendations : 추천 조합 리스트 (List<RecommendationDto> 등) -->
+        <div th:each="rec : ${recommendations}" class="recommendation-item mb-5"> <!-- [역할] 추천 서비스 간의 비교를 담는 큰 단위 섹션 -->
+            
+            <div class="comparison-card card shadow-lg border-primary"> <!-- [역할] 현재 구독과 추천 구독을 직접 비교하는 카드 -->
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h2 class="h5 mb-0">💡 이런 변화는 어떠신가요?</h2>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        
+                        <!-- 현재 구독 (방치 중) -->
+                        <div class="col-md-5 current-service text-center p-3"> <!-- [역할] 사용량이 낮아 해지를 권장하는 현재 구독 서비스 영역 -->
+                            <span class="badge badge-danger mb-2">현재 이용 중</span>
+                            <!-- [백엔드 필드] rec.currentSubscription.plan.name : 현재 서비스 명 -->
+                            <h3 class="h4" th:text="${rec.currentSubscription.plan.name}">넷플릭스</h3>
+                            <!-- [백엔드 필드] rec.currentSubscription.monthlyUsageCount : 최근 사용 횟수 -->
+                            <p class="text-danger font-weight-bold mb-3">
+                                한 달간 <span th:text="${rec.currentSubscription.monthlyUsageCount}">0</span>회 이용
+                            </p>
+                            <!-- [백엔드 필드] rec.currentSubscription.plan.monthlyPrice : 현재 월 요금 -->
+                            <p class="text-muted">월 결제액: <span th:text="${#numbers.formatInteger(rec.currentSubscription.plan.monthlyPrice, 0, 'COMMA')}">0</span>원</p>
+                        </div>
+
+                        <!-- VS / Arrow -->
+                        <div class="col-md-2 text-center my-3"> <!-- [역할] 전환을 의미하는 화살표 또는 VS 아이콘 영역 -->
+                            <span class="display-4 text-primary">&rarr</span>
+                        </div>
+
+                        <!-- 추천 구독 (대안) -->
+                        <div class="col-md-5 suggested-service text-center p-3 bg-light rounded"> <!-- [역할] 더 저렴하거나 효율적인 대안 서비스 추천 영역 -->
+                            <span class="badge badge-success mb-2">추천 대안</span>
+                            <!-- [백엔드 필드] rec.suggestedPlan.name : 추천 서비스 명 -->
+                            <h3 class="h4" th:text="${rec.suggestedPlan.name}">유튜브 프리미엄</h3>
+                            <!-- [백엔드 필드] rec.reason : 추천 이유 (예: 요금 절약, 더 높은 만족도 등) -->
+                            <p class="text-success font-weight-bold mb-3" th:text="${rec.reason}">월 요금 5,000원 절약!</p>
+                            <!-- [백엔드 필드] rec.suggestedPlan.monthlyPrice : 추천 월 요금 -->
+                            <p class="text-muted">월 예상 요금: <span th:text="${#numbers.formatInteger(rec.suggestedPlan.monthlyPrice, 0, 'COMMA')}">0</span>원</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 기대 효과 및 액션 버튼 -->
+                <div class="card-footer bg-white border-top-0 p-4"> <!-- [역할] 추천을 수락했을 때의 효과 안내 및 버튼 영역 -->
+                    <div class="benefit-summary alert alert-success text-center mb-4"> <!-- [역할] 요금 절약액 등 긍정적 효과 강조 영역 -->
+                        <!-- [백엔드 필드] rec.expectedSavings : 연간/월간 절약 예상 금액 -->
+                        이 제안을 따르면 연간 <strong><span th:text="${#numbers.formatInteger(rec.expectedSavings, 0, 'COMMA')}">0</span>원</strong>을 절약할 수 있습니다!
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-3"> <!-- [역할] 최종 결정 버튼들 -->
+                        <!-- [백엔드 API] GET /plans/{id} : 추천 서비스 상세 보기 -->
+                        <a th:href="@{/plans/{id}(id=${rec.suggestedPlan.id})}" class="btn btn-primary btn-lg">추천 서비스 상세보기</a>
+                        <!-- [백엔드 API] POST /subscriptions/cancel/{id} : 현재 서비스 해지 페이지로 이동 -->
+                        <a th:href="@{/member/subscriptions}" class="btn btn-outline-danger btn-lg">기존 구독 정리하기</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 해지 다이어리로 유도 -->
+        <div class="cancellation-diary-cta mt-5 p-4 bg-dark text-white rounded text-center"> <!-- [역할] 해지 기록(다이어리) 페이지로 이동을 유도하는 하단 바 -->
+            <p class="mb-2">이미 다른 서비스를 해지하셨나요? 이유를 기록하고 낭비를 줄여보세요.</p>
+            <a href="/cancellation-log" class="font-weight-bold" style="color: var(--warning);">해지 다이어리 보러가기 &rarr;</a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

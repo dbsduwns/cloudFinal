@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<!-- 
+    [프론트엔드 3] 플랜 상세 페이지
+    - 가이드라인: layout.html 상속 필수
+    - 핵심 요소: 플랜 상세 정보, 확대 히트맵(30일), 구독/체크인 액션
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <!-- [백엔드 필드] plan.name : 플랜 이름 -->
+    <title th:text="${plan.name} + ' 상세 정보 - SubTrack'">플랜 상세 - SubTrack</title>
+</head>
+<body>
+<section class="content">
+    <style>
+        /* 레이아웃 구조 보정 Grid */
+        .app-container {
+            display: grid;
+            grid-template-areas: 
+                "sidebar header"
+                "sidebar main"
+                "sidebar footer";
+            grid-template-columns: var(--sidebar-w) 1fr;
+            grid-template-rows: var(--header-h) 1fr auto;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        .site-header {
+            grid-area: header;
+            height: var(--header-h);
+        }
+        .site-nav {
+            grid-area: sidebar;
+            width: var(--sidebar-w);
+        }
+        .main-content {
+            grid-area: main;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .site-footer {
+            grid-area: footer;
+        }
+        
+        /* 기존 스타일 */
+        .btn-outline-primary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        .btn-outline-primary:hover {
+            background: var(--primary-soft);
+        }
+        .btn-outline-danger {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+        .btn-outline-danger:hover {
+            background: #FEF2F2;
+        }
+        .badge-primary {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+        .heatmap-large {
+            grid-template-columns: repeat(10, 1fr);
+            gap: 12px;
+        }
+        .heatmap-large .heat-cell {
+            border-radius: 6px;
+        }
+    </style>
+    <div class="container">
+        <div class="page-actions mb-4"> <!-- [역할] 상단 액션바 (뒤로가기 등) -->
+            <a href="javascript:history.back()" class="btn btn-link">&larr 돌아가기</a>
+        </div>
+
+        <div class="detail-wrapper"> <!-- [역할] 상세 페이지 전체 레이아웃 컨테이너 -->
+            
+            <!-- 1. 플랜 기본 정보 카드 -->
+            <div class="detail-header card mb-4"> <!-- [역할] 플랜의 핵심 정보를 보여주는 상단 카드 -->
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <!-- [백엔드 필드] plan.category : 카테고리 (예: OTT, 음악) -->
+                            <span class="badge badge-primary mb-2" th:text="${plan.category}">OTT</span> <!-- [역할] 카테고리 표시 배지 -->
+                            <!-- [백엔드 필드] plan.name : 플랜 이름 -->
+                            <h1 class="display-5" th:text="${plan.name}">서비스 이름</h1> <!-- [역할] 서비스 대제목 -->
+                        </div>
+                        <!-- [백엔드 필드] plan.providerUrl : 공식 홈페이지 링크 -->
+                        <a th:href="${plan.providerUrl}" target="_blank" class="btn btn-outline-primary">공식 홈페이지 &nearrow</a> <!-- [역할] 외부 링크 버튼 -->
+                    </div>
+                    
+                    <div class="price-section mt-3"> <!-- [역할] 요금 정보 섹션 -->
+                        <p class="h4">
+                            <!-- [백엔드 필드] plan.monthlyPrice : 월 요금 -->
+                            월 <span th:text="${#numbers.formatInteger(plan.monthlyPrice, 0, 'COMMA')}">0</span>원 / 
+                            <!-- [백엔드 필드] plan.yearlyPrice : 연 요금 -->
+                            연 <span th:text="${#numbers.formatInteger(plan.yearlyPrice, 0, 'COMMA')}">0</span>원
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 내 구독 현황 정보 (로그인 및 구독 중인 경우에만 표시) -->
+            <!-- [백엔드 데이터] subscription : 사용자의 구독 정보 (MemberSubscription 객체) -->
+            <div th:if="${subscription != null}" class="my-subscription card mb-4"> <!-- [역할] 사용자의 개인 구독 상태 정보를 담는 카드 -->
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="h4 mb-0">내 구독 현황</h2>
+                    <!-- [백엔드 필드] subscription.alertLevel : 경보 단계 (NORMAL, WARNING, DANGER, CRITICAL) -->
+                    <span class="badge" 
+                          th:classappend="'badge-' + ${#strings.toLowerCase(subscription.alertLevel)}" 
+                          th:text="${subscription.alertLevel}">NORMAL</span> <!-- [역할] 현재 구독의 위험도 배지 -->
+                </div>
+                <div class="card-body">
+                    <div class="row info-stats mb-4 text-center"> <!-- [역할] 주요 구독 수치 정보 그리드 -->
+                        <div class="col-md-4 border-right">
+                            <p class="text-muted mb-1 small">구독 시작일</p>
+                            <!-- [백엔드 필드] subscription.startDate : 시작 날짜 -->
+                            <p class="h5" th:text="${#temporals.format(subscription.startDate, 'yyyy-MM-dd')}">2024-01-01</p>
+                        </div>
+                        <div class="col-md-4 border-right">
+                            <p class="text-muted mb-1 small">다음 결제 예정일</p>
+                            <!-- [백엔드 필드] subscription.dueDate : 결제 예정일 -->
+                            <p class="h5" th:text="${#temporals.format(subscription.dueDate, 'yyyy-MM-dd')}">2024-02-01</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="text-muted mb-1 small">최근 사용일</p>
+                            <!-- [백엔드 필드] subscription.lastUsedAt : 최근 체크인 날짜 -->
+                            <p class="h5" th:text="${subscription.lastUsedAt != null ? #temporals.format(subscription.lastUsedAt, 'yyyy-MM-dd') : '기록 없음'}">기록 없음</p>
+                        </div>
+                    </div>
+
+                    <!-- 3. 확대 히트맵 섹션 -->
+                    <div class="usage-heatmap mt-5"> <!-- [역할] 상세 사용 기록 시각화(히트맵) 섹션 -->
+                        <h3 class="h5 mb-3">최근 30일 체크인 상세</h3>
+                        <!-- 가이드라인: .heatmap-grid 안에 30개의 .heat-box 생성 -->
+                        <div class="heatmap-grid heatmap-large"> <!-- [역할] 크게 보여주는 히트맵 그리드 컨테이너 -->
+                            <!-- [백엔드 데이터] usageStats : 30일치 사용 기록 (SubscriptionUsage 리스트) -->
+                            <!-- [백엔드 필드] usage.used : 해당 날짜 사용 여부 (Boolean), usage.usedDate : 날짜 -->
+                            <div th:each="usage : ${usageStats}" 
+                                 class="heat-cell" 
+                                 th:classappend="${usage.used ? 'heat-green-3' : 'heat-gray'}"
+                                 th:title="${usage.usedDate} + (usage.used ? ' : 사용함' : ' : 미사용')"> <!-- [역할] 날짜별 사용 여부 칸 -->
+                            </div>
+                        </div>
+                        <div class="heatmap-legend mt-2 d-flex justify-content-end gap-3"> <!-- [역할] 히트맵 범례 표시 영역 -->
+                            <small><span class="heat-cell heat-green-3 d-inline-block" style="width:12px;height:12px;vertical-align:middle;"></span> 사용함</small>
+                            <small><span class="heat-cell heat-gray d-inline-block" style="width:12px;height:12px;vertical-align:middle;"></span> 미사용</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between"> <!-- [역할] 카드 하단 액션 버튼 영역 -->
+                    <!-- [백엔드 API] POST /checkin/{id} : subscription.id (구독 PK) -->
+                    <form th:action="@{/checkin/{id}(id=${subscription.id})}" method="post">
+                        <!-- [백엔드 데이터] todayCheckedIn : 오늘 체크인 완료 여부 (Boolean) -->
+                        <button type="submit" class="btn btn-primary" th:disabled="${todayCheckedIn}">
+                            <span th:text="${todayCheckedIn ? '오늘의 체크인 완료' : '오늘도 사용하셨나요? 체크인!'}">체크인!</span>
+                        </button>
+                    </form>
+                    <a th:href="@{/member/subscriptions}" class="btn btn-outline-danger">구독 관리 / 해지</a> <!-- [역할] 해지/관리 페이지 이동 버튼 -->
+                </div>
+            </div>
+
+            <!-- 4. 구독하지 않은 상태일 때 (신규 구독 유도) -->
+            <div th:if="${subscription == null}" class="subscribe-cta card p-5 text-center"> <!-- [역할] 미구독 사용자에게 보이는 구독 신청 유도 영역 -->
+                <p class="h4 mb-4">이 서비스가 마음에 드시나요? 지금 바로 관리해보세요.</p>
+                <!-- [백엔드 API] GET /subscribe?planId=... : plan.id (플랜 PK) -->
+                <a th:href="@{/subscribe(planId=${plan.id})}" class="btn btn-primary btn-lg">내 구독에 추가하기</a> <!-- [역할] 구독 신청 시작 버튼 -->
+            </div>
+
+        </div>
+    </div>
+</section>
+</body>
+</html>

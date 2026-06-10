@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!-- 
+    [프론트엔드 3] 구독 신청 결과 페이지
+    - 가이드라인: layout.html 상속 필수
+    - 핵심 요소: 성공/실패 메시지 표시, 다음 행동 유도(내 구독 보기 등)
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>신청 결과 - SubTrack</title>
+</head>
+<body>
+<section class="content">
+    <style>
+        /* 레이아웃 구조 보정 Grid */
+        .app-container {
+            display: grid;
+            grid-template-areas: 
+                "sidebar header"
+                "sidebar main"
+                "sidebar footer";
+            grid-template-columns: var(--sidebar-w) 1fr;
+            grid-template-rows: var(--header-h) 1fr auto;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        .site-header {
+            grid-area: header;
+            height: var(--header-h);
+        }
+        .site-nav {
+            grid-area: sidebar;
+            width: var(--sidebar-w);
+        }
+        .main-content {
+            grid-area: main;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .site-footer {
+            grid-area: footer;
+        }
+    </style>
+    <div class="container">
+        <div class="result-container card mx-auto mt-5 p-5 text-center" style="max-width: 500px;"> <!-- [역할] 결과 메시지를 담는 중앙 정렬 카드 -->
+            
+            <!-- 1. 성공 케이스 -->
+            <!-- [백엔드 데이터] isSuccess : 신청 성공 여부 (Boolean) -->
+            <div th:if="${isSuccess}">
+                <div class="result-icon mb-4"> <!-- [역할] 성공을 나타내는 아이콘/이미지 영역 -->
+                    <span class="display-1" style="color: var(--success);">&check;</span>
+                </div>
+                <h1 class="h3 mb-3">구독 신청 완료!</h1>
+                <!-- [백엔드 데이터] message : 성공 상세 메시지 -->
+                <p class="text-muted mb-4" th:text="${message}">성공적으로 구독 목록에 추가되었습니다.</p>
+                
+                <div class="result-actions d-grid gap-2"> <!-- [역할] 성공 후 다음 단계 이동 버튼 영역 -->
+                    <a href="/subscriptions" class="btn btn-primary btn-lg">내 구독 관리로 이동</a>
+                    <a href="/" class="btn btn-link">홈으로 가기</a>
+                </div>
+            </div>
+
+            <!-- 2. 실패 케이스 -->
+            <div th:if="${!isSuccess}">
+                <div class="result-icon mb-4"> <!-- [역할] 실패를 나타내는 아이콘/이미지 영역 -->
+                    <span class="display-1" style="color: var(--danger);">&times;</span>
+                </div>
+                <h1 class="h3 mb-3">구독 신청 실패</h1>
+                <!-- [백엔드 데이터] message : 실패 원인 메시지 -->
+                <p class="text-muted mb-4" th:text="${message}">이미 구독 중인 서비스이거나 일시적인 오류가 발생했습니다.</p>
+                
+                <div class="result-actions d-grid gap-2"> <!-- [역할] 실패 후 재시도 또는 문의 버튼 영역 -->
+                    <a href="javascript:history.back()" class="btn btn-outline-primary btn-lg">다시 시도하기</a>
+                    <a href="/" class="btn btn-link">플랜 목록으로 돌아가기</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+</body>
+</html>

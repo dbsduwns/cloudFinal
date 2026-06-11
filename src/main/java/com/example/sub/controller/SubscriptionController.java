@@ -35,7 +35,7 @@ public class SubscriptionController {
         
         subscriptions.add(Map.of(
             "id", 2L,
-            "plan", Map.of("id", 2L, "name", "Disney+", "category", "OTT"),
+            "plan", Map.of("id", 2L, "name", "avsee", "category", "OTT"),
             "startDate", LocalDate.now().minusMonths(1),
             "dueDate", LocalDate.now().plusDays(5),
             "lastUsedAt", LocalDate.now().minusDays(10),
@@ -112,6 +112,30 @@ public class SubscriptionController {
     public String checkIn(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("successMessage", "체크인이 완료되었습니다!");
         return "redirect:/";
+    }
+
+    /**
+     * [프론트엔드 3] 구독 신청 POST
+     * API: POST /subscribe
+     */
+    @PostMapping("/subscribe")
+    public String subscribe(@org.springframework.web.bind.annotation.RequestParam Long planId,
+                            @org.springframework.web.bind.annotation.RequestParam String startDate,
+                            @org.springframework.web.bind.annotation.RequestParam(required = false) String dueDate,
+                            Model model) {
+        model.addAttribute("isSuccess", true);
+        model.addAttribute("message", "성공적으로 구독 목록에 추가되었습니다! (시작일: " + startDate + ")");
+        return "subscribe/result";
+    }
+
+    /**
+     * [프론트엔드 3] 구독 해지 POST
+     * API: POST /subscriptions/cancel/{id}
+     */
+    @PostMapping("/subscriptions/cancel/{id}")
+    public String cancelSubscription(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("successMessage", "구독이 안전하게 해지되었으며, 해지 다이어리에 기록되었습니다.");
+        return "redirect:/subscriptions";
     }
 
     /**

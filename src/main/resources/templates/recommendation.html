@@ -24,6 +24,17 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden;
+            
+            --primary: #1A367E;
+            --primary-dark: #142d6e;
+            --primary-soft: rgba(26, 54, 126, 0.08);
+            --card-shadow: 0 4px 32px rgba(26, 54, 126, 0.10);
+            --radius-large: 16px;
+            --radius-small: 10px;
+            --bg-body: #F4F6FB;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
         }
         .site-header {
             grid-area: header;
@@ -37,31 +48,172 @@
             grid-area: main;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow-y: auto;
+            background: var(--bg-body);
         }
         .site-footer {
             grid-area: footer;
         }
-        
-        /* 기존 스타일 */
+
+        .container {
+            max-width: 900px;
+            padding: 40px 24px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            font-size: 14px;
+            color: #6B7A99;
+        }
+
+        /* 비교 카드 프리미엄화 (login.html 참조) */
+        .comparison-card {
+            background: #fff;
+            border-radius: var(--radius-large);
+            box-shadow: var(--card-shadow);
+            border: none;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .comparison-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(26, 54, 126, 0.15);
+        }
+
+        .comparison-card .card-header {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-bottom: none;
+        }
+        .comparison-card .card-header h2 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+
+        .comparison-card .card-body {
+            padding: 40px 36px;
+        }
+
+        .comparison-card .card-footer {
+            background: #fff;
+            border-top: 1.5px solid #E2E8F0;
+            padding: 32px 36px;
+        }
+
+        /* 현재 구독 vs 추천 구독 영역 */
+        .current-service {
+            border: 1.5px solid #E2E8F0;
+            border-radius: var(--radius-small);
+            padding: 24px;
+        }
+        .suggested-service {
+            background: #F8FAFC;
+            border: 1.5px solid #E2E8F0;
+            border-radius: var(--radius-small);
+            padding: 24px;
+        }
+
+        .current-service h3, .suggested-service h3 {
+            font-size: 20px;
+            font-weight: 800;
+            color: #111827;
+            margin-top: 8px;
+        }
+
+        /* 배지 스타일 */
+        .badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 20px;
+            letter-spacing: -0.2px;
+            display: inline-block;
+        }
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+        }
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        /* 혜택 요약 얼럿 */
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.08);
+            color: #065F46;
+            border: 1.5px solid rgba(16, 185, 129, 0.2);
+            padding: 16px;
+            border-radius: var(--radius-small);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* 버튼 프리미엄화 */
+        .btn {
+            font-size: 14px;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: var(--radius-small);
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
         .btn-outline-danger {
-            background: transparent;
+            background: #fff;
             color: var(--danger);
-            border: 1px solid var(--danger);
+            border: 1.5px solid var(--danger);
         }
         .btn-outline-danger:hover {
             background: #FEF2F2;
+            transform: translateY(-1px);
         }
-        .badge-success {
-            background: #E8F5E9;
-            color: var(--success);
+
+        /* 하단 다이어리 유도 CTA 배너 */
+        .cancellation-diary-cta {
+            background: #1E293B !important;
+            border-radius: var(--radius-large);
+            padding: 32px !important;
+            box-shadow: var(--card-shadow);
         }
-        .alert-success {
-            background-color: #E8F5E9;
-            color: var(--success);
-            border: 1px solid #C8E6C9;
-            padding: 15px;
-            border-radius: var(--radius-small);
+        .cancellation-diary-cta p {
+            font-size: 15px;
+            color: #E2E8F0;
+            margin-bottom: 12px;
+        }
+        .cancellation-diary-cta a {
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .cancellation-diary-cta a:hover {
+            text-decoration: underline;
         }
     </style>
     <div class="container">

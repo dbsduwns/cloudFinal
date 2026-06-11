@@ -25,6 +25,14 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden;
+            
+            --primary: #1A367E;
+            --primary-dark: #142d6e;
+            --primary-soft: rgba(26, 54, 126, 0.08);
+            --card-shadow: 0 4px 32px rgba(26, 54, 126, 0.10);
+            --radius-large: 16px;
+            --radius-small: 10px;
+            --bg-body: #F4F6FB;
         }
         .site-header {
             grid-area: header;
@@ -38,39 +46,198 @@
             grid-area: main;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow-y: auto;
+            background: var(--bg-body);
         }
         .site-footer {
             grid-area: footer;
         }
-        
-        /* 기존 스타일 */
-        .btn-outline-primary {
-            background: transparent;
+
+        .container {
+            max-width: 900px;
+            padding: 40px 24px;
+        }
+
+        /* 뒤로가기 링크 스타일 */
+        .btn-link {
+            color: #6B7A99;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .btn-link:hover {
             color: var(--primary);
-            border: 1px solid var(--primary);
+        }
+
+        /* 카드 프리미엄 스타일 */
+        .card {
+            background: #fff;
+            border-radius: var(--radius-large);
+            box-shadow: var(--card-shadow);
+            border: none;
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+        
+        .card-body {
+            padding: 40px 36px;
+        }
+
+        .card-header {
+            background: #fff;
+            border-bottom: 1.5px solid #E2E8F0;
+            padding: 24px 36px;
+        }
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .card-footer {
+            background: #F8FAFC;
+            border-top: 1.5px solid #E2E8F0;
+            padding: 24px 36px;
+        }
+
+        /* 플랜 기본 정보 */
+        .display-5 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: -1px;
+            margin-top: 4px;
+        }
+        
+        .price-section {
+            background: #F8FAFC;
+            border-radius: var(--radius-small);
+            padding: 18px 24px;
+            border: 1.5px solid #E2E8F0;
+            display: inline-block;
+        }
+        .price-section .h4 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0;
+        }
+
+        /* 배지 공통 */
+        .badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            letter-spacing: -0.2px;
+            display: inline-block;
+        }
+        .badge-primary {
+            background: rgba(26, 54, 126, 0.08);
+            color: var(--primary);
+        }
+        .badge-normal {
+            background: rgba(26, 54, 126, 0.08);
+            color: #1A367E;
+        }
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #F59E0B;
+        }
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+        }
+        .badge-critical {
+            background: #FEF2F2;
+            color: #DC2626;
+            border: 1.5px solid #FCA5A5;
+        }
+
+        /* 내 구독 스탯 */
+        .info-stats {
+            background: #F8FAFC;
+            border-radius: var(--radius-small);
+            border: 1.5px solid #E2E8F0;
+            padding: 24px 16px;
+        }
+        .info-stats .h5 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #111827;
+            margin-top: 4px;
+            margin-bottom: 0;
+        }
+        .border-right {
+            border-right: 1.5px solid #E2E8F0;
+        }
+
+        /* 히트맵 상세 */
+        .heatmap-large {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .heatmap-large .heat-cell {
+            aspect-ratio: 1/1;
+            border-radius: 6px;
+            background-color: #E2E8F0;
+            transition: background-color 0.2s;
+        }
+        .heatmap-large .heat-cell.heat-green-3 {
+            background-color: var(--primary);
+        }
+
+        /* 버튼 스타일 */
+        .btn {
+            font-size: 14px;
+            font-weight: 700;
+            padding: 11px 22px;
+            border-radius: var(--radius-small);
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        .btn-primary:disabled {
+            background: #CBD5E1;
+            color: #94A3B8;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-outline-primary {
+            background: #fff;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
         }
         .btn-outline-primary:hover {
             background: var(--primary-soft);
+            transform: translateY(-1px);
         }
         .btn-outline-danger {
-            background: transparent;
+            background: #fff;
             color: var(--danger);
-            border: 1px solid var(--danger);
+            border: 1.5px solid var(--danger);
         }
         .btn-outline-danger:hover {
             background: #FEF2F2;
-        }
-        .badge-primary {
-            background: var(--primary-soft);
-            color: var(--primary);
-        }
-        .heatmap-large {
-            grid-template-columns: repeat(10, 1fr);
-            gap: 12px;
-        }
-        .heatmap-large .heat-cell {
-            border-radius: 6px;
+            transform: translateY(-1px);
         }
     </style>
     <div class="container">

@@ -24,6 +24,16 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden;
+            
+            --primary: #1A367E;
+            --primary-dark: #142d6e;
+            --primary-soft: rgba(26, 54, 126, 0.08);
+            --card-shadow: 0 4px 32px rgba(26, 54, 126, 0.10);
+            --radius-large: 16px;
+            --radius-small: 10px;
+            --bg-body: #F4F6FB;
+            --success: #10B981;
+            --danger: #EF4444;
         }
         .site-header {
             grid-area: header;
@@ -37,20 +47,135 @@
             grid-area: main;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow-y: auto;
+            background: var(--bg-body);
         }
         .site-footer {
             grid-area: footer;
         }
+
+        .container {
+            padding: 60px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - var(--header-h) - 100px);
+        }
+
+        /* 결과 카드 프리미엄화 */
+        .result-container {
+            background: #fff;
+            border-radius: var(--radius-large);
+            box-shadow: var(--card-shadow);
+            border: none;
+            padding: 48px 44px 40px;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+        }
+
+        .result-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 24px;
+        }
+        
+        .result-success-icon {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .result-danger-icon {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .result-icon span {
+            font-size: 40px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .result-container h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .result-container p {
+            font-size: 14px;
+            color: #6B7A99;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        /* 버튼 및 폼 액션 */
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border-radius: var(--radius-small);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-outline-primary {
+            background: #fff;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+        }
+        .btn-outline-primary:hover {
+            background: var(--primary-soft);
+            transform: translateY(-1px);
+        }
+        .btn-outline-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-link {
+            color: #6B7A99;
+            background: transparent;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .btn-link:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
     </style>
     <div class="container">
-        <div class="result-container card mx-auto mt-5 p-5 text-center" style="max-width: 500px;"> <!-- [역할] 결과 메시지를 담는 중앙 정렬 카드 -->
+        <div class="result-container card">
             
             <!-- 1. 성공 케이스 -->
             <!-- [백엔드 데이터] isSuccess : 신청 성공 여부 (Boolean) -->
             <div th:if="${isSuccess}">
-                <div class="result-icon mb-4"> <!-- [역할] 성공을 나타내는 아이콘/이미지 영역 -->
-                    <span class="display-1" style="color: var(--success);">&check;</span>
+                <div class="result-icon result-success-icon">
+                    <span>&check;</span>
                 </div>
                 <h1 class="h3 mb-3">구독 신청 완료!</h1>
                 <!-- [백엔드 데이터] message : 성공 상세 메시지 -->
@@ -64,8 +189,8 @@
 
             <!-- 2. 실패 케이스 -->
             <div th:if="${!isSuccess}">
-                <div class="result-icon mb-4"> <!-- [역할] 실패를 나타내는 아이콘/이미지 영역 -->
-                    <span class="display-1" style="color: var(--danger);">&times;</span>
+                <div class="result-icon result-danger-icon">
+                    <span>&times;</span>
                 </div>
                 <h1 class="h3 mb-3">구독 신청 실패</h1>
                 <!-- [백엔드 데이터] message : 실패 원인 메시지 -->

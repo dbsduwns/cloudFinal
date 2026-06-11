@@ -24,6 +24,14 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden;
+            
+            --primary: #1A367E;
+            --primary-dark: #142d6e;
+            --primary-soft: rgba(26, 54, 126, 0.08);
+            --card-shadow: 0 4px 32px rgba(26, 54, 126, 0.10);
+            --radius-large: 16px;
+            --radius-small: 10px;
+            --bg-body: #F4F6FB;
         }
         .site-header {
             grid-area: header;
@@ -37,36 +45,127 @@
             grid-area: main;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow-y: auto;
+            background: var(--bg-body);
         }
         .site-footer {
             grid-area: footer;
         }
         
-        /* 기존 스타일 */
+        .container {
+            max-width: 1000px;
+            padding: 40px 24px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            font-size: 14px;
+            color: #6B7A99;
+        }
+
+        /* 개별 구독 카드 (login.html 참조) */
+        .subscription-item {
+            background: #fff;
+            border-radius: var(--radius-large);
+            box-shadow: var(--card-shadow);
+            border: none;
+            margin-bottom: 24px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .subscription-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(26, 54, 126, 0.15);
+        }
+        
+        .subscription-item .card-body {
+            padding: 32px 28px;
+        }
+
+        .subscription-item .card-footer {
+            background: #F8FAFC;
+            border-top: 1.5px solid #E2E8F0;
+            padding: 16px 28px;
+        }
+
+        /* 배지 스타일 */
+        .badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            letter-spacing: -0.2px;
+            display: inline-block;
+        }
+        .badge-normal {
+            background: rgba(26, 54, 126, 0.08);
+            color: #1A367E;
+        }
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #F59E0B;
+        }
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+        }
+        .badge-critical {
+            background: #FEF2F2;
+            color: #DC2626;
+            border: 1.5px solid #FCA5A5;
+        }
+
+        /* 버튼 프리미엄 스타일 */
+        .btn {
+            font-size: 13px;
+            font-weight: 700;
+            padding: 9px 16px;
+            border-radius: var(--radius-small);
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        
         .btn-outline-primary {
-            background: transparent;
+            background: #fff;
             color: var(--primary);
-            border: 1px solid var(--primary);
+            border: 1.5px solid var(--primary);
         }
         .btn-outline-primary:hover {
             background: var(--primary-soft);
+            transform: translateY(-1px);
         }
+        
         .btn-outline-secondary {
-            background: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
+            background: #fff;
+            color: #374151;
+            border: 1.5px solid #E2E8F0;
         }
         .btn-outline-secondary:hover {
-            background: var(--bg-main);
+            background: #F8FAFC;
+            border-color: #CBD5E1;
+            transform: translateY(-1px);
         }
+        
         .btn-outline-danger {
-            background: transparent;
+            background: #fff;
             color: var(--danger);
-            border: 1px solid var(--danger);
+            border: 1.5px solid var(--danger);
         }
         .btn-outline-danger:hover {
             background: #FEF2F2;
+            transform: translateY(-1px);
         }
     </style>
     <div class="container">
@@ -142,8 +241,18 @@
                 </div>
             </div>
 
-        </div>
     </div>
+    
+    <!-- 토스트 알림 처리 -->
+    <script th:inline="javascript" th:if="${successMessage != null}">
+        /*<![CDATA[*/
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof window.showToast === 'function') {
+                window.showToast(/*[[${successMessage}]]*/ '작업이 완료되었습니다.');
+            }
+        });
+        /*]]>*/
+    </script>
 </section>
 </body>
 </html>

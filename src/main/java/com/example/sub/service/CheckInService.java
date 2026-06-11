@@ -1,0 +1,36 @@
+package com.example.sub.service;
+
+import com.example.sub.domain.entity.MemberSubscription;
+import com.example.sub.domain.entity.SubscriptionUsage;
+import com.example.sub.repository.MemberSubscriptionRepository;
+import com.example.sub.repository.SubscriptionUsageRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class CheckInService {
+
+    private final SubscriptionUsageRepository usageRepository;
+    private final MemberSubscriptionRepository memberSubscriptionRepository;
+    private final AlertLevelResolver alertLevelResolver;
+
+    public void checkIn(Long subscriptionId) {
+        MemberSubscription subscription = memberSubscriptionRepository.findById(subscriptionId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid subscription ID"));
+
+        SubscriptionUsage usage = new SubscriptionUsage();
+        usage.setMemberSubscription(subscription);
+        usage.setUsedDate(LocalDate.now());
+        usage.setUsed(true);
+        usageRepository.save(usage);
+
+        // 마지막 사용일 및 경보 등급 업데이트
+        subscription.setLastUsedAt(LocalDate.now());
+        subscription.setAlertLevel(alertLevelResolver.resolve(subscription.getLastUsedAt()));
+    }
+}

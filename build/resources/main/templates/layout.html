@@ -5,26 +5,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:replace="${title}">SubTrack</title>
+    <title th:replace="${title}">SubDiary</title>
+    
+    <!-- Design System: Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    
+    <!-- Build Assets (Vite) -->
     <link rel="stylesheet" th:href="@{/css/main.css}">
 </head>
-<body>
-    <div class="app-container">
-        <!-- Header -->
-        <header th:replace="~{fragments/header :: header}"></header>
-        
-        <!-- Navigation -->
-        <nav th:replace="~{fragments/nav :: nav}"></nav>
-        
-        <!-- Main Content -->
-        <main class="main-content">
-            <section th:replace="${content}"></section>
-        </main>
-        
-        <!-- Footer -->
-        <footer th:replace="~{fragments/footer :: footer}"></footer>
+<body class="subdiary-theme">
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside th:replace="~{fragments/nav :: nav}"></aside>
+
+        <div class="main-container">
+            <!-- Top Header -->
+            <header th:replace="~{fragments/header :: header}"></header>
+
+            <!-- Main Page Content -->
+            <main class="content-body">
+                <section th:replace="${content}"></section>
+            </main>
+
+            <!-- Optional Footer -->
+            <footer th:replace="~{fragments/footer :: footer}"></footer>
+        </div>
     </div>
-    
+
+    <!-- Core Scripts -->
     <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

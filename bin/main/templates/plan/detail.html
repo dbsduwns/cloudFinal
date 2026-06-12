@@ -183,11 +183,7 @@
         .heatmap-large .heat-cell {
             aspect-ratio: 1/1;
             border-radius: 6px;
-            background-color: #E2E8F0;
             transition: background-color 0.2s;
-        }
-        .heatmap-large .heat-cell.heat-green-3 {
-            background-color: var(--primary);
         }
 
         /* 버튼 스타일 */
@@ -258,7 +254,7 @@
                             <h1 class="display-5" th:text="${plan.name}">서비스 이름</h1> <!-- [역할] 서비스 대제목 -->
                         </div>
                         <!-- [백엔드 필드] plan.providerUrl : 공식 홈페이지 링크 -->
-                        <a th:href="${plan.providerUrl}" target="_blank" class="btn btn-outline-primary">공식 홈페이지 &nearrow</a> <!-- [역할] 외부 링크 버튼 -->
+                        <a th:href="${plan.providerUrl}" target="_blank" class="btn btn-outline-primary">공식 홈페이지 ↗</a> <!-- [역할] 외부 링크 버튼 -->
                     </div>
                     
                     <div class="price-section mt-3"> <!-- [역할] 요금 정보 섹션 -->

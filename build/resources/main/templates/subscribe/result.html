@@ -175,7 +175,7 @@
             <!-- [백엔드 데이터] isSuccess : 신청 성공 여부 (Boolean) -->
             <div th:if="${isSuccess}">
                 <div class="result-icon result-success-icon">
-                    <span>&check;</span>
+                    <span>✓</span>
                 </div>
                 <h1 class="h3 mb-3">구독 신청 완료!</h1>
                 <!-- [백엔드 데이터] message : 성공 상세 메시지 -->
@@ -190,7 +190,7 @@
             <!-- 2. 실패 케이스 -->
             <div th:if="${!isSuccess}">
                 <div class="result-icon result-danger-icon">
-                    <span>&times;</span>
+                    <span>×</span>
                 </div>
                 <h1 class="h3 mb-3">구독 신청 실패</h1>
                 <!-- [백엔드 데이터] message : 실패 원인 메시지 -->

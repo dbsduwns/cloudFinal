@@ -202,7 +202,7 @@
             <!-- 해지 기록이 없을 때 -->
             <div th:if="${#lists.isEmpty(cancellationLogs)}" class="empty-state card p-5 text-center shadow-sm">
                 <div class="mb-4">
-                    <span class="display-3 text-muted">{&nbsp}📂{&nbsp}</span>
+                    <span class="display-3 text-muted">{ }📂{ }</span>
                 </div>
                 <h3 class="h4 mb-2">아직 기록된 해지 내역이 없습니다.</h3>
                 <p class="text-muted mb-4">구독 관리를 해지할 때 남긴 발자취가 이곳에 기록됩니다.</p>
@@ -243,8 +243,8 @@
                     </div>
 
                     <!-- [백엔드 필드] log.memo : 해지하면서 남긴 반성 메모 -->
-                    <div class="memo-box" th:if="${log.memo != null && !#strings.isEmpty(log.memo)}">
-                        <strong class="d-block mb-1 text-secondary" style="font-size: 13px;">📝 해지 메모 & 반성</strong>
+                    <div class="memo-box" th:if="${log.memo != null and !#strings.isEmpty(log.memo)}">
+                        <strong class="d-block mb-1 text-secondary" style="font-size: 13px;">📝 해지 메모 및 반성</strong>
                         <p class="mb-0" th:text="${log.memo}">사용 빈도가 현저히 낮아져 해지합니다. 한 달에 한 번도 안 썼음.</p>
                     </div>
                 </div>
@@ -254,7 +254,7 @@
         <!-- 하단 바로가기 메뉴 -->
         <div class="text-center mt-5">
             <a href="/" class="btn btn-outline-secondary">
-                &larr 홈으로 돌아가기
+                ← 홈으로 돌아가기
             </a>
             <a href="/recommendations" class="btn btn-primary ml-2">
                 💡 대체 추천 확인하기

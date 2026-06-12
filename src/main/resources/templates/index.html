@@ -50,7 +50,23 @@
                         <p>구독 중인 서비스가 없습니다.</p>
                         <button class="btn btn-primary-sm">구독 추가하기</button>
                     </div>
-                    <!-- Subscription items would go here -->
+                    
+                    <!-- [프론트엔드 1] 구독 목록 샘플 & 히트맵 영역 -->
+                    <div th:if="${subscriptions != null && !#lists.isEmpty(subscriptions)}" class="subscription-list">
+                        <!-- 실제 연동 시 th:each 사용 예정 -->
+                        <div class="sub-item-card">
+                            <div class="sub-item-info">
+                                <div class="sub-icon" style="background: var(--brand-netflix);">N</div>
+                                <div class="sub-text">
+                                    <h4 class="sub-name">넷플릭스</h4>
+                                    <p class="sub-desc">프리미엄 요금제</p>
+                                </div>
+                            </div>
+                            <div class="sub-item-heatmap">
+                                <div class="heatmap-grid" id="heatmap-netflix"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

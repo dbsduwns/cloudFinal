@@ -1,16 +1,19 @@
 package com.example.sub.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter
+@Table(name = "member_subscription")
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class MemberSubscription {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,18 +26,19 @@ public class MemberSubscription {
     @JoinColumn(name = "plan_id", nullable = false)
     private SubscriptionPlan plan;
 
-    @Column(nullable = false)
+    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
+    @Column(name = "due_date")
     private LocalDate dueDate;
 
-    @Column(nullable = false)
-    private String status = "ACTIVE";
+    @Column(nullable = false, length = 20)
+    private String status; // ACTIVE, CANCELLED, PAUSED
 
-    private LocalDate lastUsedAt;
+    // Frontend convenience fields (actually calculated)
+    @Transient
+    private int monthlyCheckInCount;
 
-    @Enumerated(EnumType.STRING)
-    private AlertLevel alertLevel = AlertLevel.NORMAL;
-
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Transient
+    private int daysUntilDue;
 }

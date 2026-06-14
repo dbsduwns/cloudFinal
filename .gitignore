@@ -1,29 +1,25 @@
-# Local configuration (Security)
-application-local.yml
-.env
+# Java
+*.class
+*.jar
+*.war
+*.ear
 
 # Gradle
-.gradle/
-build/
+.gradle
+/build/
 
-# Compiled class files
-bin/
-
-# IDE settings
+# IDEs
 .idea/
 *.iml
-*.iws
-*.ipr
-out/
-
-# Frontend build artifacts (As per guide)
-src/main/resources/static/css/
-src/main/resources/static/js/
-node_modules/
+.classpath
+.project
+.settings/
+bin/
+.vscode/
 
 # Logs
 *.log
 
-# OS generated files
+# OS
 .DS_Store
 Thumbs.db

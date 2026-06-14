@@ -1,44 +1,32 @@
-# Windows
-Thumbs.db
-Desktop.ini
-
-# IDE
-.idea/
-*.iml
-.vscode/
+# Java
 *.class
+*.jar
+*.war
+*.ear
 
 # Gradle
-.gradle/
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!gradle/wrapper/gradle-wrapper.properties
+.gradle
+/build/
 
-# Node / Frontend
-node_modules/
-src/main/resources/static/css/
-src/main/resources/static/js/
-src/main/resources/static/assets/
-src/main/frontend/dist/
+# IDEs
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+bin/
+.vscode/
 
 # Logs
 *.log
-logs/
 
 # OS
 .DS_Store
+Thumbs.db
 
-# Environment
+# Local configuration
+src/main/resources/application-local.yml
 .env
-application-local.yml
 
-# Build artifacts
-*.jar
-*.war
-
-# Temp
-*.tmp
-*.swp
-
-# Eclipse/STS output
-bin/
+# Crashlytics/Firebase
+com_google_firebase_crashlytics_build_id.xml

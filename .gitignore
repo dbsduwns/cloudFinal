@@ -23,10 +23,3 @@ bin/
 # OS
 .DS_Store
 Thumbs.db
-
-# Local configuration
-src/main/resources/application-local.yml
-.env
-
-# Crashlytics/Firebase
-com_google_firebase_crashlytics_build_id.xml

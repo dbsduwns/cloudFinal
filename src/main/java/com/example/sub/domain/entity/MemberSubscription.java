@@ -35,6 +35,13 @@ public class MemberSubscription {
     @Column(nullable = false, length = 20)
     private String status; // ACTIVE, CANCELLED, PAUSED
 
+    @Column(name = "last_used_at")
+    private LocalDate lastUsedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "alert_level", length = 20)
+    private AlertLevel alertLevel;
+
     // Frontend convenience fields (actually calculated)
     @Transient
     private int monthlyCheckInCount;

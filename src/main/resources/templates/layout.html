@@ -6,7 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:replace="${title}">SubTrack</title>
-    <link rel="stylesheet" th:href="@{/css/main.css}">
+
+    <link rel="stylesheet" th:href="@{/assets/main.css}">
 </head>
 <body>
     <div class="app-container">
@@ -25,6 +26,6 @@
         <footer th:replace="~{fragments/footer :: footer}"></footer>
     </div>
     
-    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/assets/main.js}"></script>
 </body>
 </html>

@@ -19,7 +19,7 @@ public class CheckInService {
     private final MemberSubscriptionRepository memberSubscriptionRepository;
     private final AlertLevelResolver alertLevelResolver;
 
-    public void checkIn(Long subscriptionId) {
+    public void checkIn(Long subscriptionId, Integer durationMinutes) {
         MemberSubscription subscription = memberSubscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid subscription ID"));
 
@@ -27,6 +27,7 @@ public class CheckInService {
         usage.setMemberSubscription(subscription);
         usage.setUsedDate(LocalDate.now());
         usage.setUsed(true);
+        usage.setDurationMinutes(durationMinutes);
         usageRepository.save(usage);
 
         // 마지막 사용일 및 경보 등급 업데이트

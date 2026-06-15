@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!-- 
+    [프론트엔드 3 확장] 전체 플랜 목록 페이지
+    - 가이드라인: layout.html 상속 필수
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>전체 구독 플랜 - SubTrack</title>
+</head>
+<body>
+<section class="content">
+    <style>
+        /* 프리미엄 플랜 카드 그리드 */
+        .all-plan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .all-plan-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-large);
+            background: white;
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .all-plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .all-plan-header {
+            padding: 25px 25px 15px;
+            border-bottom: 1px solid var(--bg-main);
+        }
+
+        .all-plan-body {
+            padding: 20px 25px;
+            flex-grow: 1;
+        }
+
+        .all-plan-footer {
+            padding: 15px 25px 25px;
+            background-color: var(--bg-main);
+            display: flex;
+            gap: 10px;
+        }
+
+        .price-badge {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .category-tag {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: var(--primary);
+            background-color: var(--primary-soft);
+            padding: 4px 10px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <div class="container">
+        <header class="page-header mb-5 d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="font-weight-extrabold text-dark">✨ 전체 구독 서비스 목록</h1>
+                <p class="text-muted">원하는 서비스를 선택하여 내 구독 목록에 간편하게 추가하고 사용량을 관리하세요.</p>
+            </div>
+            <a href="/subscriptions" class="btn btn-outline-secondary">&larr; 내 구독 관리로 돌아가기</a>
+        </header>
+
+        <div class="all-plan-grid">
+            <!-- p: SubscriptionPlan 엔티티 객체 -->
+            <div th:each="p : ${plans}" class="all-plan-card card">
+                <div class="all-plan-header">
+                    <span class="category-tag" th:text="${p.category}">카테고리</span>
+                    <h2 class="h4 font-weight-bold mb-1 text-dark" th:text="${p.name}">넷플릭스</h2>
+                </div>
+                
+                <div class="all-plan-body">
+                    <div class="price-container">
+                        <div class="mb-2">
+                            <span class="text-muted small">월간 구독 요금</span>
+                            <p class="price-badge mb-0">
+                                <span th:text="${#numbers.formatInteger(p.monthlyPrice, 0, 'COMMA')}">0</span>원
+                            </p>
+                        </div>
+                        <div>
+                            <span class="text-muted small">연간 구독 요금</span>
+                            <p class="text-secondary font-weight-bold mb-0">
+                                <span th:text="${#numbers.formatInteger(p.yearlyPrice, 0, 'COMMA')}">0</span>원
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="all-plan-footer">
+                    <a th:href="@{/plans/{id}(id=${p.id})}" class="btn btn-outline-secondary flex-grow-1">상세 보기</a>
+                    <a th:href="@{/subscribe(planId=${p.id})}" class="btn btn-primary flex-grow-1">구독에 추가</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

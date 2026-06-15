@@ -32,13 +32,30 @@ public class SubscriptionController {
         return "member/subscriptions";
     }
 
+    @GetMapping("/subscribe")
+    public String subscribeForm(@RequestParam(required = false) Long planId, Model model) {
+        if (planId == null) {
+            return "redirect:/plans";
+        }
+        try {
+            model.addAttribute("plan", subscriptionService.findPlanById(planId));
+        } catch (IllegalArgumentException e) {
+            return "redirect:/plans";
+        }
+        return "subscribe/form";
+    }
+
     @PostMapping("/subscribe")
     public String subscribe(@RequestParam Long planId, 
                             @RequestParam(defaultValue = "#{T(java.time.LocalDate).now().toString()}") String startDate, 
+                            @RequestParam(required = false) String dueDate,
                             RedirectAttributes rttr) {
         // 실제 운영시는 SecurityContextHolder에서 memberId를 가져와야 함
         Long mockMemberId = 1L;
-        subscriptionService.subscribe(mockMemberId, planId, LocalDate.parse(startDate));
+        LocalDate parsedStartDate = LocalDate.parse(startDate);
+        LocalDate parsedDueDate = (dueDate != null && !dueDate.isEmpty()) ? LocalDate.parse(dueDate) : null;
+        
+        subscriptionService.subscribe(mockMemberId, planId, parsedStartDate, parsedDueDate);
         
         rttr.addFlashAttribute("successMessage", "구독 신청이 완료되었습니다.");
         return "redirect:/subscriptions";
@@ -53,7 +70,7 @@ public class SubscriptionController {
         return "redirect:/";
     }
 
-    @PostMapping("/subscriptions/{id}/cancel")
+    @PostMapping("/subscriptions/cancel/{id}")
     public String cancel(@PathVariable Long id, RedirectAttributes rttr) {
         subscriptionService.cancelSubscription(id);
         rttr.addFlashAttribute("successMessage", "구독이 해지되었습니다.");

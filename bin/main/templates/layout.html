@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(title, content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:replace="${title}">SubTrack</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header th:replace="~{fragments/header :: header}"></header>
+        
+        <!-- Navigation -->
+        <nav th:replace="~{fragments/nav :: nav}"></nav>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <section th:replace="${content}"></section>
+        </main>
+        
+        <!-- Footer -->
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </div>
+    
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

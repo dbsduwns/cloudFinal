@@ -4,12 +4,14 @@ import com.example.sub.domain.entity.Member;
 import com.example.sub.domain.entity.Role;
 import com.example.sub.dto.MemberForm;
 import com.example.sub.repository.MemberRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Getter
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberService {

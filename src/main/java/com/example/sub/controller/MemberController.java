@@ -5,9 +5,11 @@ import com.example.sub.dto.MemberForm;
 import com.example.sub.repository.MemberSubscriptionRepository;
 import com.example.sub.service.MemberService;
 import com.example.sub.service.UsageAnalyticsService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -28,7 +30,13 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public String join(MemberForm form) {
+    public String join(@Valid MemberForm form, BindingResult bindingResult, Model model) {
+        if (form.getPassword() != null && !form.getPassword().equals(form.getPasswordConfirm())) {
+            bindingResult.rejectValue("passwordConfirm", "error.passwordConfirm", "비밀번호가 일치하지 않습니다.");
+        }
+        if (bindingResult.hasErrors()) {
+            return "member/join";
+        }
         memberService.join(form);
         return "redirect:/login";
     }

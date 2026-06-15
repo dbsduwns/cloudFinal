@@ -4,6 +4,8 @@ import com.example.sub.domain.entity.AlertLevel;
 import com.example.sub.domain.entity.Member;
 import com.example.sub.domain.entity.MemberSubscription;
 import com.example.sub.domain.entity.SubscriptionPlan;
+import com.example.sub.repository.CancellationLogRepository;
+import com.example.sub.domain.entity.CancellationLog;
 import com.example.sub.repository.MemberRepository;
 import com.example.sub.repository.MemberSubscriptionRepository;
 import com.example.sub.repository.SubscriptionPlanRepository;
@@ -22,6 +24,7 @@ public class SubscriptionService {
     private final SubscriptionPlanRepository planRepository;
     private final MemberSubscriptionRepository memberSubscriptionRepository;
     private final MemberRepository memberRepository;
+    private final CancellationLogRepository cancellationLogRepository;
 
     public List<SubscriptionPlan> findAllPlans() {
         return planRepository.findAll();
@@ -36,7 +39,7 @@ public class SubscriptionService {
     }
 
     @Transactional
-    public void subscribe(Long memberId, Long planId, LocalDate startDate) {
+    public void subscribe(Long memberId, Long planId, LocalDate startDate, LocalDate dueDate) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid member ID"));
         SubscriptionPlan plan = planRepository.findById(planId)
@@ -46,6 +49,7 @@ public class SubscriptionService {
                 .member(member)
                 .plan(plan)
                 .startDate(startDate)
+                .dueDate(dueDate)
                 .status("ACTIVE")
                 .lastUsedAt(startDate)
                 .alertLevel(AlertLevel.NORMAL)
@@ -59,6 +63,16 @@ public class SubscriptionService {
         MemberSubscription subscription = memberSubscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid subscription ID"));
         subscription.setStatus("CANCELLED");
+
+        // 해지 다이어리 기록 생성
+        CancellationLog log = CancellationLog.builder()
+                .member(subscription.getMember())
+                .plan(subscription.getPlan())
+                .cancelledAt(LocalDate.now())
+                .tags("기타")
+                .memo("사용 빈도가 낮아 구독 해지")
+                .build();
+        cancellationLogRepository.save(log);
     }
 
     @Transactional

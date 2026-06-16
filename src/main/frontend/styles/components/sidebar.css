@@ -4,20 +4,32 @@
   position: fixed;
   left: 0;
   top: 0;
-  background-color: var(--surface-container);
-  border-right: 1px solid var(--outline-variant);
+  z-index: 100;
   display: flex;
   flex-direction: column;
   padding: var(--space-8) var(--space-4);
-  z-index: 100;
+  border-right: 1px solid var(--outline-variant);
+  background-color: var(--surface-container);
 }
 
+.logo-area,
 .sidebar-logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary);
-  margin-bottom: var(--space-8);
   padding: 0 var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.logo-text {
+  display: block;
+  color: var(--primary);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.logo-subtext {
+  display: block;
+  color: var(--outline);
+  font-size: 0.8rem;
+  margin-top: var(--space-1);
 }
 
 .nav-list {
@@ -33,7 +45,7 @@
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
   color: var(--on-surface-variant);
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.2s;
 }
 
@@ -45,10 +57,16 @@
 .nav-item.active {
   background-color: var(--primary-container);
   color: var(--primary);
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .sidebar-footer {
+  display: grid;
+  gap: var(--space-2);
   margin-top: auto;
   padding: var(--space-4);
+}
+
+.btn-sidebar {
+  width: 100%;
 }

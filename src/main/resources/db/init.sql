@@ -10,8 +10,8 @@ USE subscription;
 
 -- 2. 사용자 생성 및 권한 부여
 -- 애플리케이션이 사용할 전용 계정을 생성합니다.
-CREATE USER IF NOT EXISTS 'sub_user'@'localhost' IDENTIFIED BY 'sub_password';
-GRANT ALL PRIVILEGES ON subscription.* TO 'sub_user'@'localhost';
+CREATE USER IF NOT EXISTS 'sub_user'@'%' IDENTIFIED BY 'sub_password';
+GRANT ALL PRIVILEGES ON subscription.* TO 'sub_user'@'%';
 FLUSH PRIVILEGES;
 
 -- 3. 테이블 생성 (ERD 설계 반영)
@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS member (
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     name VARCHAR(50) NOT NULL,
+    phone VARCHAR(20),
     role VARCHAR(20) NOT NULL DEFAULT 'USER',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

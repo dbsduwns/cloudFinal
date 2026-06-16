@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface CancellationLogRepository extends JpaRepository<CancellationLog, Long> {
     List<CancellationLog> findByMemberIdOrderByCancelledAtDesc(Long memberId);
-    Optional<CancellationLog> findByRecoveryToken(String token);
+    // Optional<CancellationLog> findByRecoveryToken(String token);
 }

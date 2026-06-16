@@ -432,7 +432,7 @@
 
           <!-- 상태 배지: ACTIVE / CANCELLED / PAUSED -->
           <td>
-            <span th:class="'badge badge-' + ${s.status}"
+            <span th:class="'badge ' + (s.status == 'ACTIVE' ? 'badge-success' : (s.status == 'CANCELLED' ? 'badge-danger' : 'badge-warning'))"
                   th:text="${s.status}">ACTIVE</span>
           </td>
 

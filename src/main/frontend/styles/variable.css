@@ -1,12 +1,9 @@
-/* variables.css - 색상 및 타이포 기본 토큰 */
 :root {
-  /* Brand Colors */
   --primary: #0052cc;
   --on-primary: #ffffff;
   --primary-container: #d9e2ff;
   --on-primary-container: #001945;
 
-  /* Surface & Background */
   --surface: #f8f9fb;
   --surface-dim: #d9dadc;
   --surface-bright: #f8f9fb;
@@ -19,7 +16,6 @@
   --surface-variant: #e2e8f0;
   --on-surface-variant: #44474e;
 
-  /* Semantic Colors */
   --success: #22c55e;
   --on-success: #ffffff;
   --success-container: #dcfce7;
@@ -29,23 +25,23 @@
   --error: #ba1a1a;
   --on-error: #ffffff;
   --error-container: #ffdad6;
+  --info: #0ea5e9;
+  --info-container: #e0f2fe;
 
-  /* Outline */
   --outline: #74777f;
   --outline-variant: #c4c6cf;
 
-  /* Radius */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-full: 9999px;
 
-  /* Spacing */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
+  --space-10: 2.5rem;
 }

@@ -1,0 +1,50 @@
+<!--/*
+  * [프론트엔드 3 - 해지 다이어리 페이지 안내]
+  * 
+  * 1. 사용 백엔드 변수 (Model Key)
+  *    - logs (List<CancellationLog>): 로그인한 사용자가 과거에 해지했던 구독 로그 내역 목록
+  * 
+  * 2. 주요 주의사항
+  *    - 과거 해지 로그가 아예 존재하지 않는 경우(`logs == null` 혹은 비어있을 때)에는 Empty State 카드(안내 문구)를 노출하여 화면 흐름을 이어가야 합니다.
+  *    - 해지 사유 메모(`log.memo`)와 함께 태그(`log.tags`)가 존재할 시 primary badge 형태로 태그 리스트를 출력해 줍니다.
+  */-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}"
+      lang="ko">
+<head>
+    <title>해지 다이어리 - SubTrack</title>
+</head>
+<body>
+<section class="container">
+    <div class="page-header">
+        <p class="eyebrow">Cancellation Diary</p>
+        <h1 class="page-title">해지 다이어리</h1>
+        <p class="page-subtitle">해지한 이유를 남겨두면 다음 구독 선택에서 같은 낭비를 줄일 수 있습니다.</p>
+    </div>
+
+    <div th:if="${logs == null || #lists.isEmpty(logs)}" class="empty-state card">
+        <i class="bi bi-journal-check"></i>
+        <h3>아직 해지 기록이 없습니다</h3>
+        <p>구독을 해지하면 날짜, 태그, 메모가 이곳에 쌓입니다.</p>
+        <a th:href="@{/subscriptions}" class="btn btn-primary">구독 관리로 이동</a>
+    </div>
+
+    <div th:if="${logs != null && !#lists.isEmpty(logs)}" class="log-list">
+        <article th:each="log : ${logs}" class="card log-card">
+            <div class="log-date">
+                <i class="bi bi-calendar-x"></i>
+                <span th:text="${#temporals.format(log.cancelledAt, 'yyyy.MM.dd')}">2026.06.16</span>
+            </div>
+            <div class="log-content">
+                <h2 th:text="${log.plan != null ? log.plan.name : '해지한 구독'}">해지한 구독</h2>
+                <p th:text="${log.memo != null && !#strings.isEmpty(log.memo) ? log.memo : '메모가 없습니다.'}">메모가 없습니다.</p>
+                <div class="tag-row" th:if="${log.tags != null && !#strings.isEmpty(log.tags)}">
+                    <span class="badge badge-primary" th:text="${log.tags}">태그</span>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+</body>
+</html>

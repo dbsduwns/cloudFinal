@@ -21,7 +21,7 @@
 ---
 
 ## 2. 프로젝트 폴더 구조
-
+```
 subscription-service/
 ├── .github/workflows/deploy.yml # CI/CD (팀장)
 ├── scripts/deploy.sh # 배포 쉘 스크립트 (팀장)
@@ -61,8 +61,7 @@ subscription-service/
 │ ├── css/main.css
 │ └── js/main.js
 └── build.gradle
-
----
+```
 
 ## 3. 팀원별 역할 상세
 

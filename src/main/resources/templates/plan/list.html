@@ -1,3 +1,15 @@
+<!--/*
+  * [프론트엔드 3 - 메인/플랜 목록 페이지 안내]
+  * 
+  * 1. 사용 백엔드 변수 (Model Key)
+  *    - plans (List<SubscriptionPlan>): 전체 구독 서비스 플랜 목록
+  *    - subscriptions (List<MemberSubscription>): 로그인한 사용자의 활성 구독 정보 리스트 (체크인/히트맵 바인딩용)
+  * 
+  * 2. 주요 주의사항
+  *    - 로그인하지 않은 사용자는 'subscriptions'가 빈 리스트로 유입되므로 널 및 엠프티 체크가 안전하게 동작해야 합니다.
+  *    - 히트맵 그리드는 30칸 그리드로 `<div class="heatmap-grid">` 하위에서 `th:each` 루프를 사용해 `heat-cell` 30개를 직접 그려내야 합니다.
+  *    - 구독하지 않은 플랜은 GET `/subscribe?planId=X` 경로로 유도해야 시작일 지정 및 약관 동의 절차를 올바르게 거칠 수 있습니다.
+  */-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(~{::title}, ~{::section})}"

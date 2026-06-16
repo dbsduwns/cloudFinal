@@ -1,3 +1,14 @@
+<!--/*
+  * [프론트엔드 3 - 내 구독 관리 페이지 안내]
+  * 
+  * 1. 사용 백엔드 변수 (Model Key)
+  *    - subscriptions (List<MemberSubscription>): 로그인한 사용자의 모든 활성/비활성 구독 정보 목록
+  * 
+  * 2. 주요 주의사항
+  *    - 가이드라인에 규정된 대로 `<div class="heatmap-grid">` 하위에서 `th:each` 루프를 사용해 `heat-cell` 30개를 서버사이드에서 직접 그려내야 합니다.
+  *    - 이용 중 상태(`ACTIVE`)인 경우에 한해, 방치 방지 메일 수신 등을 켜고 끌 수 있는 알림 설정 UI가 렌더링되도록 처리합니다.
+  *    - 해지 요청 시 `/cancellation/request/{id}` 경로로 subscription의 ID를 실어 보내야 합니다.
+  */-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(~{::title}, ~{::section})}"

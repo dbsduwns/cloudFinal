@@ -12,7 +12,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 
 @Controller
-@RequestMapping("/cancellation")
 @RequiredArgsConstructor
 public class CancellationController {
 
@@ -20,22 +19,24 @@ public class CancellationController {
     private final CancellationLogRepository logRepository;
     private final MemberRepository memberRepository;
 
-    @GetMapping("/request/{subscriptionId}")
+    @GetMapping("/cancellation/request/{subscriptionId}")
     public String requestForm(@PathVariable Long subscriptionId, Model model) {
         model.addAttribute("subscriptionId", subscriptionId);
         return "subscribe/cancel-request";
     }
 
 // 임시: Security 없을 때
-@PostMapping("/cancel")
-public String cancel(@RequestParam Long memberId,  // 임시로 직접 받음
-                     @RequestParam Long subscriptionId,
-                     @RequestParam String reason) {
-    cancellationService.cancelSubscription(memberId, subscriptionId, reason);
-    return "redirect:/my-subscriptions";
-}
+    @PostMapping("/cancellation/cancel")
+    public String cancel(Principal principal,
+                         @RequestParam Long subscriptionId,
+                         @RequestParam String reason) {
+        var member = memberRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
+        cancellationService.cancelSubscription(member.getId(), subscriptionId, reason);
+        return "redirect:/subscriptions";
+    }
 
-    @GetMapping("/recover")
+    @GetMapping("/cancellation/recover")
     public String recover(@RequestParam String token, RedirectAttributes ra) {
         try {
             cancellationService.recoverByToken(token);
@@ -43,15 +44,15 @@ public String cancel(@RequestParam Long memberId,  // 임시로 직접 받음
         } catch (Exception e) {
             ra.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/my-subscriptions";
+        return "redirect:/subscriptions";
     }
 
-    @GetMapping("/my-history")
+    @GetMapping({"/cancellation/my-history", "/cancellation-log"})
     public String myHistory(Principal principal, Model model) {
         var member = memberRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
         var logs = logRepository.findByMemberIdOrderByCancelledAtDesc(member.getId());
         model.addAttribute("logs", logs);
-        return "member/cancellation-history";
+        return "cancellation-log";
     }
 }

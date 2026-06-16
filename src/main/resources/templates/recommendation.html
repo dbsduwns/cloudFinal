@@ -1,3 +1,12 @@
+<!--/*
+  * [프론트엔드 3 - 대체 구독 추천 페이지 안내]
+  * 
+  * 1. 사용 백엔드 변수 (Model Key)
+  *    - recommendations (List<RecommendationDto>): 개인 사용량 기반의 맞춤형 대체 구독 서비스 추천 목록
+  * 
+  * 2. 주요 주의사항
+  *    - 동적으로 추천 데이터(`recommendations`)가 전달되지 않거나 비어있는 경우, 화면에 빈 상태가 노출되는 대신 가이드라인에 따른 하드코딩된 정적 Fallback 추천 카드(콘텐츠, 음악, 클라우드 등)가 자연스럽게 렌더링되도록 방어 코드를 설계해야 합니다.
+  */-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(~{::title}, ~{::section})}"

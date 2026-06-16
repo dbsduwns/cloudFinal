@@ -1,3 +1,14 @@
+<!--/*
+  * [프론트엔드 3 - 플랜 상세 페이지 안내]
+  * 
+  * 1. 사용 백엔드 변수 (Model Key)
+  *    - plan (SubscriptionPlan): 상세 조회하고자 하는 해당 플랜 정보
+  *    - userSub (MemberSubscription): 로그인한 사용자가 해당 플랜을 이미 구독 중일 때의 데이터 (미구독 시 null)
+  * 
+  * 2. 주요 주의사항
+  *    - 사용자의 구독 여부(`userSub != null`)에 따라 우측 패널의 양식이 구독 가입 폼 혹은 체크인 완료/바로가기 링크 박스로 다이내믹하게 전환되어야 합니다.
+  *    - 구독 이용 중인 경우, 최근 30일 간의 정밀한 날짜별 일차가 명시된 확대 히트맵 그리드(aspect-ratio: 1, 10열 정렬)가 활성화되어야 합니다.
+  */-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(~{::title}, ~{::section})}"

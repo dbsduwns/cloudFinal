@@ -1,3 +1,13 @@
+<!--/*
+  * [프론트엔드 3 - 구독 신청 결과 페이지 안내]
+  * 
+  * 1. 사용 백엔드 변수 (Model Key)
+  *    - successMessage (String): 구독 신청 성공 시 노출되는 메시지
+  *    - errorMessage (String): 구독 신청 실패 시 노출되는 에러 이유 설명 (성공 시 null)
+  * 
+  * 2. 주요 주의사항
+  *    - 'errorMessage' 존재 유무에 따라 성공 결과 카드(그린 테마)와 실패 결과 카드(레드 테마)가 th:if 분기를 통해 깔끔하게 제어되어 렌더링되어야 합니다.
+  */-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(~{::title}, ~{::section})}"

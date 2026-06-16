@@ -30,6 +30,15 @@ public class SubscriptionController {
         return "member/subscriptions";
     }
 
+    @GetMapping("/subscribe")
+    public String subscribeForm(@RequestParam(required = false) Long planId, Model model) {
+        if (planId == null) {
+            return "redirect:/plans";
+        }
+        model.addAttribute("plan", subscriptionService.findPlanById(planId));
+        return "subscribe/form";
+    }
+
     @PostMapping("/subscribe")
     public String subscribe(@RequestParam Long planId, 
                             @RequestParam(defaultValue = "#{T(java.time.LocalDate).now().toString()}") String startDate, 
@@ -39,7 +48,12 @@ public class SubscriptionController {
         subscriptionService.subscribe(mockMemberId, planId, LocalDate.parse(startDate));
         
         rttr.addFlashAttribute("successMessage", "구독 신청이 완료되었습니다.");
-        return "redirect:/subscriptions";
+        return "redirect:/subscribe/result";
+    }
+
+    @GetMapping("/subscribe/result")
+    public String subscribeResult() {
+        return "subscribe/result";
     }
 
     @PostMapping("/checkin/{id}")

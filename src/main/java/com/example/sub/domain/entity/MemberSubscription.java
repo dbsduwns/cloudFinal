@@ -48,4 +48,19 @@ public class MemberSubscription {
 
     @Transient
     private int daysUntilDue;
+
+    @Transient
+    private String heatmapData;
+
+    public java.util.List<Integer> getHeatmapList() {
+        if (heatmapData == null || heatmapData.isEmpty()) {
+            return java.util.Collections.nCopies(30, 0);
+        }
+        String clean = heatmapData.replaceAll("[\\[\\]\\s]", "");
+        return java.util.Arrays.stream(clean.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(Integer::parseInt)
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

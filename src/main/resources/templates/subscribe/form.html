@@ -1,3 +1,13 @@
+<!--/*
+  * [프론트엔드 3 - 구독 신청 폼 페이지 안내]
+  * 
+  * 1. 사용 백엔드 변수 (Model Key)
+  *    - plan (SubscriptionPlan): 가입 신청하려는 대상 구독 서비스 플랜 정보
+  * 
+  * 2. 주요 주의사항
+  *    - 시작일(date) 파라미터는 `startDate`라는 name으로 전송되어야 하며, 기본값으로 오늘 날짜가 지정되어 작동하게 유도합니다.
+  *    - 가이드라인에 따른 **필수 약관 동의 체크박스**(`required`)가 포함되어 약관에 동의하지 않을 시 가입 폼 제출이 차단되어야 합니다.
+  */-->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: layout(~{::title}, ~{::section})}"

@@ -1,0 +1,72 @@
+/* form.css - 입력 폼 및 관련 컴포넌트 스타일 */
+
+.form-group {
+  margin-bottom: var(--space-4);
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  margin-bottom: var(--space-2);
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--on-surface);
+  background-color: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-container);
+}
+
+.form-control::placeholder {
+  color: var(--outline);
+  opacity: 0.7;
+}
+
+.form-control:disabled {
+  background-color: var(--surface-container-low);
+  cursor: not-allowed;
+}
+
+/* 헬퍼 텍스트 */
+.form-text {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: 0.75rem;
+  color: var(--outline);
+}
+
+/* 에러 상태 */
+.form-group.has-error .form-control {
+  border-color: var(--error);
+}
+
+.form-group.has-error .form-text {
+  color: var(--error);
+}
+
+/* 체크박스 & 라디오 커스텀 */
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+
+.form-check-input {
+  width: 1.125rem;
+  height: 1.125rem;
+  cursor: pointer;
+}

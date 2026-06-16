@@ -1,0 +1,45 @@
+/* [프론트엔드 1] 히트맵(잔디) 시스템 CSS (가이드 명세 준수) */
+
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* 30칸을 위해 보통 10열 사용 */
+    gap: 6px;
+}
+
+.heat-cell {
+    aspect-ratio: 1/1;
+    border-radius: 4px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+/* 가이드 명세 클래스명 */
+.heat-green {
+    background: var(--success, #27AE60);
+}
+
+.heat-gray {
+    background: var(--outline-variant, #E9E9EB);
+}
+
+/* 경보 상태 (가이드: "방치 경보") */
+.heat-warning {
+    background: var(--warning, #FF9500);
+    animation: pulse-warning 2s infinite;
+}
+
+.heat-danger {
+    background: var(--error, #FF3B30);
+    animation: pulse-danger 2s infinite;
+}
+
+@keyframes pulse-warning {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+@keyframes pulse-danger {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}

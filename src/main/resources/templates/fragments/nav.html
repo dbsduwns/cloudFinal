@@ -1,59 +1,69 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="ko">
 <head></head>
 <body>
 <aside th:fragment="nav" class="sidebar">
     <div class="logo-area">
-        <a th:href="@{/}" class="logo-text">SubDiary</a>
+        <a th:href="@{/}" class="logo-text">SubTrack</a>
         <span class="logo-subtext">구독 관리 다이어리</span>
     </div>
-    
-    <nav class="nav-list">
-        <!-- Common Menu -->
-        <a th:href="@{/}" class="nav-item" th:classappend="${#httpServletRequest.requestURI == '/' ? 'active' : ''}">
+
+    <nav class="nav-list" aria-label="주요 메뉴">
+        <a th:href="@{/}" class="nav-item">
             <i class="bi bi-grid-1x2-fill"></i>
             <span>대시보드</span>
         </a>
-        
-        <!-- Authenticated Menu -->
+        <a th:href="@{/plans}" class="nav-item">
+            <i class="bi bi-search-heart-fill"></i>
+            <span>구독 탐색</span>
+        </a>
+
         <div sec:authorize="isAuthenticated()">
-            <a th:href="@{/subscriptions}" class="nav-item" th:classappend="${#httpServletRequest.requestURI == '/subscriptions' ? 'active' : ''}">
+            <a th:href="@{/subscriptions}" class="nav-item">
                 <i class="bi bi-layers-fill"></i>
-                <span>구독 관리</span>
+                <span>내 구독 관리</span>
             </a>
-            <a th:href="@{/member/mypage}" class="nav-item" th:classappend="${#httpServletRequest.requestURI.startsWith('/member') ? 'active' : ''}">
+            <a th:href="@{/recommendation}" class="nav-item">
+                <i class="bi bi-lightbulb-fill"></i>
+                <span>대체 구독 추천</span>
+            </a>
+            <a th:href="@{/cancellation/my-history}" class="nav-item">
+                <i class="bi bi-journal-text"></i>
+                <span>해지 다이어리</span>
+            </a>
+            <a th:href="@{/member/mypage}" class="nav-item">
                 <i class="bi bi-person-fill-gear"></i>
                 <span>마이페이지</span>
             </a>
         </div>
-        
-        <!-- Guest Menu -->
+
         <div sec:authorize="!isAuthenticated()">
-            <a th:href="@{/login}" class="nav-item" th:classappend="${#httpServletRequest.requestURI == '/login' ? 'active' : ''}">
+            <a th:href="@{/login}" class="nav-item">
                 <i class="bi bi-box-arrow-in-right"></i>
                 <span>로그인</span>
             </a>
-            <a th:href="@{/join}" class="nav-item" th:classappend="${#httpServletRequest.requestURI == '/join' ? 'active' : ''}">
+            <a th:href="@{/join}" class="nav-item">
                 <i class="bi bi-person-plus-fill"></i>
                 <span>회원가입</span>
             </a>
         </div>
     </nav>
-    
+
     <div class="sidebar-footer">
         <div sec:authorize="isAuthenticated()" class="auth-footer">
             <form th:action="@{/logout}" method="post">
-                <button type="submit" class="btn-logout">
+                <button type="submit" class="btn btn-outline btn-sidebar">
                     <i class="bi bi-box-arrow-right"></i>
                     <span>로그아웃</span>
                 </button>
             </form>
         </div>
-        <button class="btn-add-sub">
+        <a th:href="@{/plans}" class="btn btn-primary btn-sidebar">
             <i class="bi bi-plus-lg"></i>
             <span>구독 추가하기</span>
-        </button>
+        </a>
     </div>
 </aside>
 </body>

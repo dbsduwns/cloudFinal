@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}"
+      lang="ko">
+<head>
+    <title th:text="${plan.name + ' 상세 - SubTrack'}">플랜 상세 - SubTrack</title>
+</head>
+<body>
+<section class="container">
+    <div class="detail-layout">
+        <article class="card plan-detail-card">
+            <a th:href="@{/plans}" class="text-link">
+                <i class="bi bi-arrow-left"></i>
+                목록으로
+            </a>
+
+            <div class="detail-hero">
+                <div class="service-icon service-icon-lg" th:text="${#strings.substring(plan.name, 0, 1)}">S</div>
+                <div>
+                    <span class="badge badge-primary" th:text="${plan.category}">카테고리</span>
+                    <h1 class="page-title" th:text="${plan.name}">서비스명</h1>
+                    <p class="page-subtitle">구독 후 체크인을 기록하면 사용 빈도와 방치 위험도를 시각적으로 확인할 수 있습니다.</p>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <i class="bi bi-calendar-check"></i>
+                    <strong>매일 사용 체크인</strong>
+                    <span>오늘 사용 여부와 이용 시간을 빠르게 기록합니다.</span>
+                </div>
+                <div class="feature-item">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                    <strong>30일 히트맵</strong>
+                    <span>최근 한 달 사용 패턴을 한눈에 확인합니다.</span>
+                </div>
+                <div class="feature-item">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>방치 경보</strong>
+                    <span>오래 쓰지 않은 구독은 경보 단계로 알려줍니다.</span>
+                </div>
+            </div>
+
+            <div class="provider-link" th:if="${plan.providerUrl != null && !#strings.isEmpty(plan.providerUrl)}">
+                <a th:href="${plan.providerUrl}" target="_blank" rel="noopener" class="btn btn-outline">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                    공식 사이트 열기
+                </a>
+            </div>
+
+            <!-- 확대 히트맵 섹션 (구독 중인 경우 노출) -->
+            <div th:if="${userSub != null}" class="expanded-heatmap-section" style="margin-top: var(--space-lg); border-top: 1px solid var(--border-color); padding-top: var(--space-md);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
+                    <h2 class="card-title" style="margin: 0; font-size: 18px; font-weight: 700;">확대 사용 히트맵 (최근 30일)</h2>
+                    <span class="badge badge-success" th:text="${userSub.monthlyCheckInCount} + '회 체크인'" style="background-color: var(--success); color: var(--white); font-size: 12px; padding: 4px 8px; border-radius: 4px;">0회</span>
+                </div>
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: var(--space-sm);">최근 30일 동안 하루 사용 체크인을 한 이력을 정밀하게 모니터링합니다. 초록색 칸은 사용일, 회색 칸은 미사용일을 뜻하며, 각 칸 안의 숫자는 일차를 의미합니다.</p>
+                
+                <div class="heatmap-grid" style="grid-template-columns: repeat(10, 1fr); gap: 10px; max-width: 500px;">
+                    <div th:each="val, iter : ${userSub.heatmapList}" 
+                         class="heat-cell"
+                         th:classappend="${val == 1} ? 'heat-green active' : 'heat-gray'"
+                         style="aspect-ratio: 1; border-radius: 6px; position: relative; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;"
+                         th:styleappend="${val == 1 ? 'background: var(--success); color: var(--white);' : 'color: var(--text-muted);'}"
+                         th:title="'Day ' + ${iter.count} + ': ' + ${val == 1 ? '사용함' : '기록 없음'}">
+                         <span th:text="${iter.count}">1</span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px; margin-top: var(--space-sm); font-size: 13px; color: var(--text-muted);">
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 12px; height: 12px; background: var(--success); border-radius: 2px; display: inline-block;"></span> 사용함
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 12px; height: 12px; background: var(--h-none); border-radius: 2px; display: inline-block;"></span> 기록 없음
+                    </span>
+                </div>
+            </div>
+        </article>
+ 
+        <aside class="card subscribe-panel">
+            <!-- 구독 중인 경우 -->
+            <div th:if="${userSub != null}">
+                <h2 class="card-title" style="color: var(--success); display: flex; align-items: center; gap: 6px;">
+                    <i class="bi bi-check-circle-fill"></i>
+                    구독 이용 중
+                </h2>
+                <div style="margin: var(--space-xs) 0 var(--space-sm) 0; font-size: 14px; color: var(--text-muted);">
+                    <p style="margin: 4px 0;"><strong>구독 시작일:</strong> <span th:text="${#temporals.format(userSub.startDate, 'yyyy년 MM월 dd일')}">2026년 06월 16일</span></p>
+                    <p style="margin: 4px 0; display: flex; align-items: center; gap: 6px;">
+                        <strong>경보 상태:</strong> 
+                        <span class="badge" 
+                              th:classappend="${userSub.alertLevel.name() == 'NORMAL' ? 'badge-success' : (userSub.alertLevel.name() == 'WARNING' ? 'badge-warning' : 'badge-danger')}"
+                              th:text="${userSub.alertLevel.name() == 'NORMAL' ? '정상' : (userSub.alertLevel.name() == 'WARNING' ? '주의' : (userSub.alertLevel.name() == 'DANGER' ? '위험' : '경고'))}"
+                              style="font-size: 11px; padding: 2px 6px; border-radius: 4px; color: var(--white); background-color: var(--success);">경보</span>
+                    </p>
+                </div>
+                
+                <div class="stack-form" style="margin-top: var(--space-md);">
+                    <!-- 오늘 체크인 양식 -->
+                    <form th:if="${userSub.heatmapList.get(29) == 0}" th:action="@{/checkin/{id}(id=${userSub.id})}" method="post">
+                        <input type="hidden" name="durationMinutes" value="30">
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <i class="bi bi-check2-circle"></i>
+                            오늘 사용 체크인
+                        </button>
+                    </form>
+                    
+                    <button th:if="${userSub.heatmapList.get(29) == 1}" class="btn btn-primary btn-full" disabled style="background-color: var(--success); opacity: 0.8; cursor: not-allowed;">
+                        <i class="bi bi-check-lg"></i>
+                        오늘 체크인 완료
+                    </button>
+                    
+                    <a th:href="@{/subscriptions}" class="btn btn-outline btn-full" style="margin-top: 10px; text-decoration: none; justify-content: center;">
+                        내 구독 관리 바로가기
+                    </a>
+                </div>
+            </div>
+
+            <!-- 구독 중이 아닌 경우 (기존 디자인 그대로 유지하며 폼 페이지로 이동 유도) -->
+            <div th:if="${userSub == null}">
+                <h2 class="card-title">구독 신청</h2>
+                <dl class="price-list price-list-vertical">
+                    <div>
+                        <dt>월 요금</dt>
+                        <dd><span th:text="${#numbers.formatInteger(plan.monthlyPrice, 0, 'COMMA')}">4,900</span>원</dd>
+                    </div>
+                    <div>
+                        <dt>연 요금</dt>
+                        <dd><span th:text="${#numbers.formatInteger(plan.yearlyPrice, 0, 'COMMA')}">49,000</span>원</dd>
+                    </div>
+                </dl>
+
+                <div class="stack-form">
+                    <a th:href="@{/subscribe(planId=${plan.id})}" class="btn btn-primary btn-full" style="text-decoration: none; justify-content: center; align-items: center; display: inline-flex;">
+                        <i class="bi bi-check2-circle"></i>
+                        이 플랜 구독하기
+                    </a>
+                </div>
+            </div>
+        </aside>
+    </div>
+</section>
+</body>
+</html>

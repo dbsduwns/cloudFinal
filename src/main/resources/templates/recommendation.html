@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}"
+      lang="ko">
+<head>
+    <title>대체 구독 추천 - SubTrack</title>
+</head>
+<body>
+<section class="container">
+    <div class="page-header">
+        <p class="eyebrow">Recommendation</p>
+        <h1 class="page-title">안 쓰는 구독, 더 나은 선택지로 바꿔보세요</h1>
+        <p class="page-subtitle">사용률이 낮은 구독을 기준으로 더 저렴하거나 목적이 비슷한 대체 서비스를 제안합니다.</p>
+    </div>
+
+    <div class="recommendation-layout">
+        <article class="card recommendation-main">
+            <span class="badge badge-warning">방치 경보 기반 추천</span>
+            <h2>최근 사용 기록이 적은 구독이 있습니다</h2>
+            <p>30일 히트맵과 월 체크인 횟수를 확인한 뒤, 계속 유지할지 대체할지 결정해보세요.</p>
+            <a th:href="@{/subscriptions}" class="btn btn-primary">내 구독 점검하기</a>
+        </article>
+
+        <div class="recommend-card-list">
+            <!-- 동적 추천 데이터가 있는 경우 -->
+            <th:block th:if="${recommendations != null && !#lists.isEmpty(recommendations)}">
+                <article th:each="rec : ${recommendations}" class="card recommend-item" style="display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm); margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-large); margin-top: 0;">
+                    <div class="service-icon" th:text="${rec.iconText != null ? rec.iconText : #strings.substring(rec.recommendedPlanName, 0, 1)}">R</div>
+                    <div style="flex: 1;">
+                        <span class="badge badge-primary" th:text="${rec.category}" style="font-size: 11px; margin-bottom: 4px; display: inline-block;">카테고리</span>
+                        <h3 th:text="${rec.originalPlanName} + ' ➔ ' + ${rec.recommendedPlanName}" style="margin: 4px 0 6px 0; font-size: 16px; font-weight: 700;">기존 플랜 ➔ 추천 플랜</h3>
+                        <p th:text="${rec.reason}" style="margin: 0; font-size: 13.5px; color: var(--text-muted); line-height: 1.4;">추천 사유가 여기에 표시됩니다.</p>
+                        <p style="margin: 6px 0 0 0; font-size: 13px; color: var(--primary); font-weight: 600;">
+                            월 예상 요금: <span th:text="${#numbers.formatInteger(rec.recommendedPrice, 0, 'COMMA')}">0</span>원 
+                            (약 <span th:text="${#numbers.formatInteger(rec.priceDifference, 0, 'COMMA')}">0</span>원 절약)
+                        </p>
+                    </div>
+                </article>
+            </th:block>
+
+            <!-- 동적 데이터가 없거나 비어있는 경우 (기존 정적 디자인 그대로 유지) -->
+            <th:block th:if="${recommendations == null || #lists.isEmpty(recommendations)}">
+                <article class="card recommend-item">
+                    <div class="service-icon">T</div>
+                    <div>
+                        <h3>콘텐츠 구독 대체</h3>
+                        <p>영상 구독 사용률이 낮다면 더 저렴한 월간 플랜이나 무료 체험 서비스를 비교하세요.</p>
+                    </div>
+                </article>
+                <article class="card recommend-item">
+                    <div class="service-icon">M</div>
+                    <div>
+                        <h3>음악 구독 점검</h3>
+                        <p>체크인이 적은 음악 서비스는 가족 요금제, 학생 요금제, 번들 혜택을 확인해보세요.</p>
+                    </div>
+                </article>
+                <article class="card recommend-item">
+                    <div class="service-icon">C</div>
+                    <div>
+                        <h3>클라우드 구독 정리</h3>
+                        <p>저장공간 사용량이 낮다면 낮은 용량 요금제나 연간 결제로 비용을 줄일 수 있습니다.</p>
+                    </div>
+                </article>
+            </th:block>
+        </div>
+    </div>
+</section>
+</body>
+</html>

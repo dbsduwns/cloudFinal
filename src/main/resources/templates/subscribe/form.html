@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}"
+      lang="ko">
+<head>
+    <title>구독 신청 - SubTrack</title>
+</head>
+<body>
+<section class="container narrow-container">
+    <div class="page-header">
+        <p class="eyebrow">Subscribe</p>
+        <h1 class="page-title">구독 신청</h1>
+        <p class="page-subtitle">시작일을 선택하면 오늘부터 사용 기록을 관리할 수 있습니다.</p>
+    </div>
+
+    <div class="card">
+        <form th:action="@{/subscribe}" method="post" class="stack-form">
+            <input type="hidden" name="planId" th:value="${plan != null ? plan.id : planId}">
+            <label class="form-group">
+                <span>구독 서비스</span>
+                <input type="text" th:value="${plan != null ? plan.name : '선택한 플랜'}" readonly>
+            </label>
+            <label class="form-group">
+                <span>시작일</span>
+                <input type="date" name="startDate" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+            </label>
+            <label class="form-group" style="display: flex; flex-direction: row; align-items: flex-start; gap: 10px; cursor: pointer; margin-top: 16px; margin-bottom: 20px;">
+                <input type="checkbox" id="agreeTerms" required style="width: 18px; height: 18px; margin: 0; cursor: pointer; flex-shrink: 0; accent-color: var(--primary);">
+                <span style="font-size: 13.5px; color: var(--text-main); font-weight: 500; line-height: 1.4;">
+                    (필수) 사용량 기반 구독 분석 및 방치 알림 서비스 제공을 위한 약관에 동의합니다.
+                </span>
+            </label>
+            <button type="submit" class="btn btn-primary btn-full">신청 완료</button>
+        </form>
+    </div>
+</section>
+</body>
+</html>

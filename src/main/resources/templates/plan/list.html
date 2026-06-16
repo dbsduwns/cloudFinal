@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}"
+      lang="ko">
+<head>
+    <title>구독 탐색 - SubTrack</title>
+</head>
+<body>
+<section class="container">
+    <div class="page-header page-header-row">
+        <div>
+            <p class="eyebrow">Subscription Catalog</p>
+            <h1 class="page-title">인기 구독 서비스를 한눈에 비교하세요</h1>
+            <p class="page-subtitle">요금, 카테고리, 사용 기록 관리까지 연결되는 구독 플랜 목록입니다.</p>
+        </div>
+        <a th:href="@{/subscriptions}" class="btn btn-outline">
+            <i class="bi bi-layers"></i>
+            내 구독 보기
+        </a>
+    </div>
+
+    <div th:if="${plans == null || #lists.isEmpty(plans)}" class="empty-state card">
+        <i class="bi bi-search"></i>
+        <h3>등록된 구독 플랜이 없습니다</h3>
+        <p>관리자가 플랜 데이터를 등록하면 이곳에 표시됩니다.</p>
+    </div>
+
+    <div th:if="${plans != null && !#lists.isEmpty(plans)}" class="plan-grid">
+        <article th:each="p : ${plans}" class="plan-card card"
+                 th:with="matchedSubs=${subscriptions != null ? subscriptions.?[plan.id == __${p.id}__] : null},
+                          userSub=${matchedSubs != null && !matchedSubs.isEmpty() ? matchedSubs[0] : null}">
+            <div class="plan-card-top">
+                <div class="service-icon" th:text="${#strings.substring(p.name, 0, 1)}">S</div>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <h2 class="plan-name" th:text="${p.name}">서비스명</h2>
+                        <span th:if="${userSub != null}" class="badge badge-success" style="background-color: var(--success); color: var(--white); font-size: 11px; padding: 2px 6px; border-radius: 4px;">구독중</span>
+                        <span th:if="${userSub != null && userSub.alertLevel != null}" 
+                              class="badge" 
+                              th:classappend="${userSub.alertLevel.name() == 'NORMAL' ? 'badge-success' : (userSub.alertLevel.name() == 'WARNING' ? 'badge-warning' : 'badge-danger')}"
+                              th:text="${userSub.alertLevel.name() == 'NORMAL' ? '정상' : (userSub.alertLevel.name() == 'WARNING' ? '주의' : (userSub.alertLevel.name() == 'DANGER' ? '위험' : '경고'))}"
+                              style="font-size: 11px; padding: 2px 6px; border-radius: 4px; color: var(--white);">경보</span>
+                    </div>
+                    <span class="badge badge-primary" th:text="${p.category}">카테고리</span>
+                </div>
+            </div>
+
+            <p class="plan-desc">30일 사용 히트맵과 방치 경보로 실제 사용률을 추적할 수 있습니다.</p>
+
+            <div th:if="${userSub != null}" class="heatmap-section" style="margin-top: 16px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <h3 style="font-size: 13px; font-weight: 600; margin: 0;">최근 30일 사용 히트맵</h3>
+                    <span style="font-size: 11px; color: var(--text-muted);" th:text="${userSub.monthlyCheckInCount} + '회 체크인'">0회</span>
+                </div>
+                <div class="heatmap-grid">
+                    <div th:each="val : ${userSub.heatmapList}" 
+                         class="heat-cell"
+                         th:classappend="${val == 1} ? 'heat-green active' : 'heat-gray'"
+                         style="aspect-ratio: 1; border-radius: 4px;"
+                         th:styleappend="${val == 1 ? 'background: var(--success);' : ''}">
+                    </div>
+                </div>
+            </div>
+
+            <dl class="price-list">
+                <div>
+                    <dt>월 요금</dt>
+                    <dd><span th:text="${#numbers.formatInteger(p.monthlyPrice, 0, 'COMMA')}">4,900</span>원</dd>
+                </div>
+                <div>
+                    <dt>연 요금</dt>
+                    <dd><span th:text="${#numbers.formatInteger(p.yearlyPrice, 0, 'COMMA')}">49,000</span>원</dd>
+                </div>
+            </dl>
+
+            <div class="plan-actions">
+                <a th:href="@{/plans/{id}(id=${p.id})}" class="btn btn-outline">자세히</a>
+                
+                <!-- 구독하지 않은 경우 (신청 폼으로 유도) -->
+                <a th:if="${userSub == null}" th:href="@{/subscribe(planId=${p.id})}" class="btn btn-primary" style="display: inline-flex; margin: 0; align-items: center; justify-content: center; text-decoration: none;">
+                    <i class="bi bi-plus-lg"></i>
+                    구독 신청
+                </a>
+                
+                <!-- 구독 중이고 오늘 아직 체크인 안 한 경우 -->
+                <form th:if="${userSub != null && userSub.heatmapList.get(29) == 0}" th:action="@{/checkin/{id}(id=${userSub.id})}" method="post" style="display: inline-block; margin: 0;">
+                    <input type="hidden" name="durationMinutes" value="30">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check2-circle"></i>
+                        오늘 사용
+                    </button>
+                </form>
+                
+                <!-- 구독 중이고 오늘 이미 체크인 완료한 경우 (체크인 토글 상태 표시) -->
+                <button th:if="${userSub != null && userSub.heatmapList.get(29) == 1}" class="btn btn-primary" disabled style="background-color: var(--success); opacity: 0.8; cursor: not-allowed; margin: 0;">
+                    <i class="bi bi-check-lg"></i>
+                    체크인 완료
+                </button>
+            </div>
+        </article>
+    </div>
+</section>
+</body>
+</html>

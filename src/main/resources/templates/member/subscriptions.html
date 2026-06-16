@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}"
+      lang="ko">
+<head>
+    <title>내 구독 관리 - SubTrack</title>
+</head>
+<body>
+<section class="container">
+    <div class="page-header page-header-row">
+        <div>
+            <p class="eyebrow">My Subscriptions</p>
+            <h1 class="page-title">내 구독 관리</h1>
+            <p class="page-subtitle">체크인, 30일 히트맵, 방치 경보로 구독 사용률을 관리하세요.</p>
+        </div>
+        <a th:href="@{/plans}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i>
+            구독 추가
+        </a>
+    </div>
+
+    <div th:if="${successMessage}" class="notice success">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${successMessage}">처리가 완료되었습니다.</span>
+    </div>
+
+    <div th:if="${subscriptions == null || #lists.isEmpty(subscriptions)}" class="empty-state card">
+        <i class="bi bi-inbox"></i>
+        <h3>관리 중인 구독이 없습니다</h3>
+        <p>구독을 추가하면 사용 체크인과 방치 경보가 이곳에 표시됩니다.</p>
+        <a th:href="@{/plans}" class="btn btn-primary">첫 구독 추가하기</a>
+    </div>
+
+    <div th:if="${subscriptions != null && !#lists.isEmpty(subscriptions)}" class="subscription-grid">
+        <article th:each="s : ${subscriptions}" class="subscription-card card">
+            <div class="subscription-head">
+                <div class="plan-card-top">
+                    <div class="service-icon" th:text="${#strings.substring(s.plan.name, 0, 1)}">S</div>
+                    <div>
+                        <h2 class="plan-name" th:text="${s.plan.name}">서비스명</h2>
+                        <span class="text-muted text-sm" th:text="${s.plan.category}">카테고리</span>
+                    </div>
+                </div>
+                <span class="badge"
+                      th:classappend="${s.status == 'ACTIVE'} ? 'badge-success' : (${s.status == 'CANCELLED'} ? 'badge-danger' : 'badge-warning')"
+                      th:text="${s.status == 'ACTIVE' ? '이용중' : (s.status == 'CANCELLED' ? '해지됨' : '일시중지')}">이용중</span>
+            </div>
+
+            <div class="metric-row">
+                <div>
+                    <span class="metric-label">이번 달 체크인</span>
+                    <strong><span th:text="${s.monthlyCheckInCount}">0</span>회</strong>
+                </div>
+                <div>
+                    <span class="metric-label">월 요금</span>
+                    <strong><span th:text="${#numbers.formatInteger(s.plan.monthlyPrice, 0, 'COMMA')}">4,900</span>원</strong>
+                </div>
+                <div>
+                    <span class="metric-label">시작일</span>
+                    <strong th:text="${#temporals.format(s.startDate, 'yyyy.MM.dd')}">2026.06.16</strong>
+                </div>
+            </div>
+
+            <!-- 알림 설정 UI 추가 -->
+            <div th:if="${s.status == 'ACTIVE'}" class="notification-settings" style="margin-top: 16px; margin-bottom: 16px; padding: 12px 16px; background: var(--bg-main, #f4f7fa); border: 1px solid var(--border-color); border-radius: var(--radius-small); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 13.5px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                    <i class="bi bi-bell" style="color: var(--primary);"></i>
+                    방치 방지 알림 설정
+                </span>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; color: var(--text-muted); margin: 0;">
+                    <input type="checkbox" checked style="width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); margin: 0;">
+                    이메일 알림 받기
+                </label>
+            </div>
+
+            <div class="alert-strip"
+                 th:classappend="${s.alertLevel != null ? ' level-' + #strings.toLowerCase(s.alertLevel.name()) : ' level-normal'}">
+                <i class="bi bi-activity"></i>
+                <span th:switch="${s.alertLevel != null ? s.alertLevel.name() : 'NORMAL'}">
+                    <span th:case="'WARNING'">사용 간격이 길어지고 있어요. 이번 주에 한 번 체크해보세요.</span>
+                    <span th:case="'DANGER'">장기간 사용 기록이 없습니다. 유지 여부를 점검해보세요.</span>
+                    <span th:case="'CRITICAL'">30일 이상 방치된 구독입니다. 해지 또는 대체 추천을 확인하세요.</span>
+                    <span th:case="*">정상적으로 사용 기록을 관리 중입니다.</span>
+                </span>
+            </div>
+
+            <div class="heatmap-section">
+                <div class="section-title-row">
+                    <h3>최근 30일 사용 히트맵</h3>
+                    <span class="text-xs text-muted">초록: 사용, 회색: 미사용</span>
+                </div>
+                <div class="heatmap-grid">
+                    <div th:each="val : ${s.heatmapList}" 
+                         class="heat-cell"
+                         th:classappend="${val == 1} ? 'heat-green active' : 'heat-gray'"
+                         style="aspect-ratio: 1; border-radius: 4px;"
+                         th:styleappend="${val == 1 ? 'background: var(--success);' : ''}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="subscription-actions">
+                <form th:if="${s.status == 'ACTIVE'}" th:action="@{/checkin/{id}(id=${s.id})}" method="post" class="inline-form">
+                    <input type="hidden" name="durationMinutes" value="30">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check2-circle"></i>
+                        오늘 사용
+                    </button>
+                </form>
+                <a th:if="${s.status == 'ACTIVE'}" th:href="@{/cancellation/request/{id}(id=${s.id})}" class="btn btn-outline">
+                    <i class="bi bi-x-circle"></i>
+                    해지 요청
+                </a>
+                <span th:if="${s.status == 'CANCELLED'}" class="text-sm text-muted">해지가 완료된 구독입니다.</span>
+            </div>
+        </article>
+    </div>
+</section>
+</body>
+</html>

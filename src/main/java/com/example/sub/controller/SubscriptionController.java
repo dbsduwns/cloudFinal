@@ -2,7 +2,6 @@ package com.example.sub.controller;
 
 import com.example.sub.service.CheckInService;
 import com.example.sub.service.SubscriptionService;
-import com.example.sub.service.UsageStatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,7 +19,6 @@ public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
     private final CheckInService checkInService;
-    private final UsageStatisticsService usageStatisticsService;
 
     @GetMapping("/subscriptions")
     public String mySubscriptions(Model model) {

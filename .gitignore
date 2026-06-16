@@ -1,11 +1,20 @@
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
 # Gradle
 .gradle/
-build/
+/build/
 
-# IDE
+# IDEs
 .idea/
 *.iml
 *.iws
+.classpath
+.project
+.settings/
 .vscode/
 
 # Node.js
@@ -13,9 +22,11 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
 
 # Build artifacts
 bin/
+src/main/resources/static/assets/
 src/main/resources/static/css/
 src/main/resources/static/js/
 
